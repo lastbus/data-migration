@@ -1,0 +1,92 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+<title></title>  
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap-theme.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/js/bootstrap/js/bootstrap.js"></script>
+    <!-- angular js -->
+    <script type="text/javascript" src="lib/js/angular/angular.js"></script>
+    <script src="http://cdn.bootcss.com/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
+    <script src="lib/js/angular/i18n/angular-locale_zh-cn.js"></script>  
+
+ <!--    <link rel="stylesheet" href="lib/js/bootstrap/css/bootstrap.css">
+    <script src="lib/js/angular/angular.js"></script>
+    <script src="http://cdn.bootcss.com/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script> -->
+</head>  
+<body ng-app="myApp" style="background:#4A4A4A" class="row">
+    <div style="color:#fff; font-size:30px; font-weight:bold; text-shadow:3px 3px 3px #ccc;-webkit-text-shadow:3px 3px 3px #ccc; text-align:center; margin-top:30px;">FE-演示平台</div>
+    <section class="row" >
+        <section ng-controller="modalDemo" class="col-md-6" style="margin:40px auto; float:none; background:#fff; padding:30px;">
+    <script type="text/ng-template" id="myModelContent.html">  
+    <!-- //创建一个局部视图，需要的时候引用它， 下面会用到 -->
+        <div class="modal-header"> 
+        <!-- // modal头部 。body  footer 类推 -->
+            <h3 class="modal-title">html5jq模态框</h3>
+        </div>
+        <div class="modal-body">
+            <ul>
+                <li ng-repeat="item in items">
+                <a ng-click="selected.item = item">{{item}}</a> 
+               <!--  //显示当前点击的item -->
+                </li>
+                当前选择： <b>{{selected.item}}</b>
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="ok()">
+            确认
+            </button>
+            <button class="btn btn-warning" ng-click="cancel()">退出</button>
+        </div>
+    </script>
+            <button class="btn btn-info" ng-click="open()">点我！</button>
+            <button class="btn btn-default" ng-click = "open('lg')">大模态</button>  
+            <!-- //lg 大模态，sm小模态 -->
+            <button class="btn btn-default" ng-click = "open('sm')">小模态</button>
+            <hr>
+            <div ng-show="selected">当前选择：{{selected}}</div>
+        </section>
+    </section>
+
+    <script>  
+        angular.module('myApp',['ui.bootstrap']).controller('modalDemo',function($scope,$modal,$log){ //
+        $scope.items = ['html5','jq','FE-演示平台'];
+        $scope.open = function(size){  //打开模态 
+            var modalInstance = $modal.open({
+                templateUrl : 'myModelContent.html',  //指向上面创建的视图
+                controller : 'ModalInstanceCtrl',// 初始化模态范围
+                size : size, //大小配置
+                resolve : {
+                    items : function(){
+                        return $scope.items;
+                    }
+                }
+            })
+            modalInstance.result.then(function(selectedItem){  
+                $scope.selected = selectedItem;
+            },function(){
+                $log.info('Modal dismissed at: ' + new Date())
+            })
+        }
+    })
+    angular.module('myApp').controller('ModalInstanceCtrl',function($scope,$modalInstance,items){ //依赖于modalInstance
+        $scope.items = items;
+        $scope.selected = {
+            item : $scope.items[0]
+        };
+        $scope.ok = function(){  
+            $modalInstance.close($scope.selected.item); //关闭并返回当前选项
+        };
+        $scope.cancel = function(){
+            $modalInstance.dismiss('cancel'); // 退出
+        }
+    })
+    </script>  
+</body>  
+</html>  

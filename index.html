@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- bootstrap -->
+	<link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap-theme.css">
+	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+	<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+	<script type="text/javascript" src="lib/js/bootstrap/js/bootstrap.js"></script>
+	<!-- angular js -->
+	<script type="text/javascript" src="lib/js/angular/angular.js"></script>
+	<script src="http://cdn.bootcss.com/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
+	<script src="lib/js/angular/i18n/angular-locale_zh-cn.js"></script> 
+
+	<title>Hive table transformation</title>
+</head>
+<body ng-app="main" ng-controller='dropdownCtl'>
+	<script type="text/ng-template" id="select.html">
+		<div class="modal-header">
+			<h2>{{table}}</h2>
+		</div>
+		<button class="btn btn-primary" ng-click="all()" ng-mode="ac">{{ac}}</button>
+		<div class="modal-body">
+		
+			<div id="partition-select" class="form-group">
+			    <label class="checkbox-inline">
+			        <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.red"> Red
+			    </label>
+			    <label class="checkbox-inline">
+			        <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.blue"> Blue
+			    </label>
+			    <label class="checkbox-inline">
+			        <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.green"> Green
+			    </label>
+			</div>
+
+			<li ng-repeat="partition in partitions">{{partition}}</li>
+
+			<div class="modal-footer">
+		        <button class="btn btn-primary" ng-click="ok()">确认</button>
+		        <button class="btn btn-warning" ng-click="cancel()">退出</button>
+		    </div>
+		</div>
+	</script>
+
+<div class="container">
+
+<h1>test</h1>
+
+	<div>
+		<p>Please choose destination: </p>
+		<select ng-model="environment">
+			<option ng-repeat="env in envs">{{env}}</option>
+		</select>
+	</div>
+	<br/>
+	<div>
+		<input  type="text"  id="table" placeholder="table name" ng-model="tableName">
+	</div>
+	<br/>
+	<div>
+		<button class="btn btn-primary" ng-click="search()">search</button>
+		<button class="btn btn-primary" disabled="true" id="importBtn">import all</button>
+	</div>
+	<br/>
+	<div>
+		<table class="table">
+			<tr>
+				<th>Table Name</th>
+				<th>choose</th>
+				<th>partition/records</th>
+				<th>output</th>
+				<th>action</th>
+			</tr>
+
+			<tr ng-repeat="table in tables">
+				<td>{{table.name}}</td>
+				<td>
+					<button ng-click="open()">{{table.partition | partition}}</button>
+				</td>
+				<td></td>
+				<td>
+					<input type="checkbox" ng-click="choose($index)" id="{{$index}}">
+				</td>
+				<td>
+					<button class="btn btn-primary" disabled="true" id="btn{{$index}}">import</button>
+				</td>
+			</tr>
+
+		</table>
+	</div>
+
+	<label>Partitions</label>
+	<br/>
+	<button class="btn btn-primary" ng-click="all()" ng-mode="ac">{{ac}}</button>
+	<div id="partition-select" class="form-group">
+	    <label class="checkbox-inline">
+	        <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.red"> Red
+	    </label>
+	    <label class="checkbox-inline">
+	        <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.blue"> Blue
+	    </label>
+	    <label class="checkbox-inline">
+	        <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.green"> Green
+	    </label>
+	</div>
+
+	<a href="modal.html">modal</a>
+
+
+
+</div>
+
+
+<script type="text/javascript">
+	var app = angular.module('main', ['ui.bootstrap']);
+	app.controller('partitionSelectCtl', function($scope, $modalInstance, partitions) {
+		$scope.table = 'test'
+        $scope.partitions = partitions;
+        $scope.selected = {
+            partition : $scope.partitions[0]
+        };
+        $scope.ok = function(){  
+            $modalInstance.close($scope.selected.partitions); //关闭并返回当前选项
+        };
+        $scope.cancel = function(){
+            $modalInstance.dismiss('cancel'); // 退出
+        }		
+	});
+
+	app.controller('dropdownCtl', function($scope, $http, $modal, $log) {
+		// modal
+		$scope.partitions = ['p1', 'p2'];
+		$scope.open = function(size){  //打开模态 
+            var modalInstance = $modal.open({
+                templateUrl : 'select.html',  //指向上面创建的视图
+                controller : 'partitionSelectCtl',// 初始化模态范围
+                size : size, //大小配置
+                resolve : {
+                    partitions : function(){
+                        return $scope.partitions;
+                    }
+                }
+            })
+            modalInstance.size = size;
+            modalInstance.result.then(function(selectedItem){  
+                $scope.selected = selectedItem;
+            },function(){
+                $log.info('Modal dismissed at: ' + new Date())
+            })
+        }
+        // $scope.ok = function(){  
+        //     $modalInstance.close($scope.selected.item); //关闭并返回当前选项
+        // };
+        // $scope.cancel = function(){
+        //     $modalInstance.dismiss('cancel'); // 退出
+        // }
+
+
+
+
+
+		$scope.envs = ["pre", "test"]
+		$scope.count = 0
+		$scope.tables = [
+			{name: "table1", partition: true},
+			{name: "table2", partition: true},
+			{name: "table3", partition: false}
+		]
+		$scope.ac = "all"
+		$scope.action = function(v) {
+			console.log(v)
+			$scope.data=v
+		}
+
+		$scope.choose = function(index) {
+			console.log(index)
+			console.log(document.getElementById(index))
+			var checked = document.getElementById(index).checked
+			document.getElementById('btn' + index).disabled = !document.getElementById('btn' + index).disabled
+
+			if ( checked && $scope.count == 0) {
+				$scope.count += 1
+				document.getElementById("importBtn").disabled = false
+			} else if (checked) {
+				document.getElementById('btn' + index).disabled = false
+				$scope.count += 1
+			} else if ($scope.count > 1) {
+				$scope.count -= 1
+			} else {
+				$scope.count -= 1
+				document.getElementById("importBtn").disabled = true
+			}
+			console.log($scope.count)
+		}
+
+		$scope.t = function(){
+			console.log("0000000000000")
+		}
+
+		$scope.search = function() {
+			console.log($scope.environment);
+			console.log($scope.tableName);
+			var dataBase = $scope.environment;
+			var tableName = $scope.tableName;
+			if (tableName == undefined) {
+				console.log("Please input search table name");
+				return;
+			}
+			var url = "http://localhost:8080/search";
+			if (dataBase != undefined) url += "/database/" + dataBase;
+			url += "/table/" + tableName;
+			console.log(url);
+			$http.get(url).
+			success(function(response) {
+				$scope.tables = response;
+			}).
+			error(function(response) {
+				$scope.tables = [
+					{name: "error0", partition: true},
+					{name: "error1", partition: false}
+				]
+			})
+
+		}
+
+		$scope.all = function() {
+			var u = document.getElementById("partition-select").getElementsByTagName("input")
+			if ($scope.ac == "all") {
+				for (p in u) {
+					u[p].checked = true
+				}
+				$scope.ac = "clear"
+			} else {
+				for (p in u) {
+					u[p].checked = false
+				}
+				$scope.ac = "all"
+			}
+			
+			alert("success!")
+		}
+	});
+
+	// filter
+
+	app.filter('partition', function() {
+		return function(partition) {
+			var act = "error";
+			if (partition) {
+				act = "select partition";
+			} else {
+				act = "select records";
+			}
+			return act;
+		}
+
+	});
+
+
+
+</script>
+
+</body>
+</html>
