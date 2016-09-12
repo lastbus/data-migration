@@ -22,35 +22,23 @@
 			<h2>{{table}}</h2>
 		</div>
 		<button class="btn btn-primary" ng-click="all()" ng-mode="ac">{{ac}}</button>
-		<div class="modal-body">
-		
-			<div id="partition-select" class="form-group">
-			    <label class="checkbox-inline">
-			        <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.red"> Red
-			    </label>
-			    <label class="checkbox-inline">
-			        <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.blue"> Blue
-			    </label>
-			    <label class="checkbox-inline">
-			        <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.green"> Green
-			    </label>
+		<br/>
+		<div class="modal-body"  data-spy="scroll" data-target="#navbarExample" data-offset="50" class="scrollspy-example" style="height: 200px; overflow: auto; position: relative;">
+			<div id="partition-select0">
+			    <li  ng-repeat="p in partitions">
+			        <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.red"> {{p}}
+			    </li>
 			</div>
-
-			<li ng-repeat="partition in partitions">{{partition}}</li>
-
+		</div>
 			<div class="modal-footer">
 		        <button class="btn btn-primary" ng-click="ok()">确认</button>
 		        <button class="btn btn-warning" ng-click="cancel()">退出</button>
 		    </div>
-		</div>
 	</script>
-
-<div class="container">
-
-<h1>test</h1>
-
+	<div class="container">
+	<h2>Data Migration</h2>
 	<div>
-		<p>Please choose destination: </p>
+		<h4>Please choose destination: </h4>
 		<select ng-model="environment">
 			<option ng-repeat="env in envs">{{env}}</option>
 		</select>
@@ -108,9 +96,6 @@
 	</div>
 
 	<a href="modal.html">modal</a>
-
-
-
 </div>
 
 
@@ -118,6 +103,7 @@
 	var app = angular.module('main', ['ui.bootstrap']);
 	app.controller('partitionSelectCtl', function($scope, $modalInstance, partitions) {
 		$scope.table = 'test'
+		$scope.ac = 'all'
         $scope.partitions = partitions;
         $scope.selected = {
             partition : $scope.partitions[0]
@@ -127,12 +113,30 @@
         };
         $scope.cancel = function(){
             $modalInstance.dismiss('cancel'); // 退出
-        }		
+        }
+
+		$scope.all = function () {
+			var input = document.getElementById("partition-select0").getElementsByTagName("input")
+			if ($scope.ac == "all") {
+				for (i in input) {
+					input[i].checked = true
+				}
+			 	$scope.ac = "clear"
+			} else {
+				for (i in input) {
+					input[i].checked =false
+				}
+				$scope.ac = "all"
+			}
+		}
 	});
 
 	app.controller('dropdownCtl', function($scope, $http, $modal, $log) {
 		// modal
-		$scope.partitions = ['p1', 'p2'];
+		$scope.partitions = [
+			'dt=20160912', 'dt=20160911', 'dt=1111', 'gg', 'ggg', 'gggg', 'ggggg', 'dt=201609', 'dt=11011', 'g0g', 'gg0g', 'gg0gg', 'gggg0g'
+
+		];
 		$scope.open = function(size){  //打开模态 
             var modalInstance = $modal.open({
                 templateUrl : 'select.html',  //指向上面创建的视图
@@ -151,16 +155,6 @@
                 $log.info('Modal dismissed at: ' + new Date())
             })
         }
-        // $scope.ok = function(){  
-        //     $modalInstance.close($scope.selected.item); //关闭并返回当前选项
-        // };
-        // $scope.cancel = function(){
-        //     $modalInstance.dismiss('cancel'); // 退出
-        // }
-
-
-
-
 
 		$scope.envs = ["pre", "test"]
 		$scope.count = 0
@@ -258,8 +252,6 @@
 		}
 
 	});
-
-
 
 </script>
 
