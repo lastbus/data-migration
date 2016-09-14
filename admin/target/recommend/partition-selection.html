@@ -1,0 +1,12 @@
+<div class="modal-header">
+	<h2>{{table.name}}</h2>
+</div>
+
+<div class="modal-body">
+	<li ng-repeat="partition in table.partitions"></li>
+
+	<div class="modal-footer">
+        <button class="btn btn-primary" ng-click="ok()">确认</button>
+        <button class="btn btn-warning" ng-click="cancel()">退出</button>
+    </div>
+</div>

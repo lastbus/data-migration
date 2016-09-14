@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html>
+<!--<!DOCTYPE html>-->
+<html xmlns:text-align="http://www.w3.org/1999/xhtml">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,7 +12,8 @@
 	<!-- angular js -->
 	<script type="text/javascript" src="lib/js/angular/angular.js"></script>
 	<script src="http://cdn.bootcss.com/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
-	<script src="lib/js/angular/i18n/angular-locale_zh-cn.js"></script> 
+	<script src="lib/js/angular/i18n/angular-locale_zh-cn.js"></script>
+
 
 	<title>Hive table transformation</title>
 </head>
@@ -25,8 +26,8 @@
 		<br/>
 		<div class="modal-body"  data-spy="scroll" data-target="#navbarExample" data-offset="50" class="scrollspy-example" style="height: 200px; overflow: auto; position: relative;">
 			<div id="partition-select0">
-			    <li  ng-repeat="p in partitions">
-			        <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.red"> {{p}}
+			    <li  ng-repeat="p in partitions" >
+			        <input type="checkbox" id="pp" value="{{p}}" > {{p}}
 			    </li>
 			</div>
 		</div>
@@ -35,11 +36,28 @@
 		        <button class="btn btn-warning" ng-click="cancel()">退出</button>
 		    </div>
 	</script>
-	<div class="container">
+
+	<script type="text/ng-template" id="input.html">
+		<div class="modal-header">
+			<h2>{{table}}</h2>
+		</div>
+		<div class="modal-body">
+			<label>Please input records: </label>
+			<input type="text" ng-model="recordNumber" id="recordInput">
+			<br/>
+			<p>Total records: <span>100,000</span></p>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-primary" ng-click="OK()">确定</button>
+			<button class="btn btn-primary" nt-click="cancel()">退出</button>
+		</div>
+	</script>
+<div class="container">
 	<h2>Data Migration</h2>
+	<button class="btn btn-primary" ng-click="refreshDataSource()" id="refreshBtn">更新源数据</button>
 	<div>
 		<h4>Please choose destination: </h4>
-		<select ng-model="environment">
+		<select ng-model="environment" ng-model="environment">
 			<option ng-repeat="env in envs">{{env}}</option>
 		</select>
 	</div>
@@ -49,24 +67,24 @@
 	</div>
 	<br/>
 	<div>
-		<button class="btn btn-primary" ng-click="search()">search</button>
+		<button class="btn btn-primary" ng-click="search()" >search</button>
 		<button class="btn btn-primary" disabled="true" id="importBtn">import all</button>
 	</div>
 	<br/>
 	<div>
-		<table class="table">
+		<table class="table" id="resultTable">
 			<tr>
-				<th>Table Name</th>
-				<th>choose</th>
-				<th>partition/records</th>
-				<th>output</th>
+				<th class="col-lg-3" style="text-align: center">Table Name</th>
+				<th class="col-lg-1" style="text-align: center">choose</th>
+				<th class="col-lg-7" style="text-align: center">partition/records</th>
+				<th class="col-lg-1" style="text-align: center">output</th>
 				<th>action</th>
 			</tr>
 
 			<tr ng-repeat="table in tables">
 				<td>{{table.name}}</td>
 				<td>
-					<button ng-click="open()">{{table.partition | partition}}</button>
+					<button ng-click="open($index)">{{table.partition | partition}}</button>
 				</td>
 				<td></td>
 				<td>
@@ -80,133 +98,119 @@
 		</table>
 	</div>
 
-	<label>Partitions</label>
-	<br/>
-	<button class="btn btn-primary" ng-click="all()" ng-mode="ac">{{ac}}</button>
-	<div id="partition-select" class="form-group">
-	    <label class="checkbox-inline">
-	        <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.red"> Red
-	    </label>
-	    <label class="checkbox-inline">
-	        <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.blue"> Blue
-	    </label>
-	    <label class="checkbox-inline">
-	        <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.green"> Green
-	    </label>
-	</div>
-
 	<a href="modal.html">modal</a>
+
+	<button class="btn btn-primary" ng-click="request()">Request</button>
+	<input type="text" ng-model="serverResponse">
 </div>
 
 
 <script type="text/javascript">
 	var app = angular.module('main', ['ui.bootstrap']);
-	app.controller('partitionSelectCtl', function($scope, $modalInstance, partitions) {
-		$scope.table = 'test'
-		$scope.ac = 'all'
-        $scope.partitions = partitions;
-        $scope.selected = {
-            partition : $scope.partitions[0]
-        };
-        $scope.ok = function(){  
-            $modalInstance.close($scope.selected.partitions); //关闭并返回当前选项
-        };
-        $scope.cancel = function(){
-            $modalInstance.dismiss('cancel'); // 退出
-        }
-
-		$scope.all = function () {
-			var input = document.getElementById("partition-select0").getElementsByTagName("input")
-			if ($scope.ac == "all") {
-				for (i in input) {
-					input[i].checked = true
-				}
-			 	$scope.ac = "clear"
-			} else {
-				for (i in input) {
-					input[i].checked =false
-				}
-				$scope.ac = "all"
-			}
-		}
-	});
 
 	app.controller('dropdownCtl', function($scope, $http, $modal, $log) {
 		// modal
 		$scope.partitions = [
-			'dt=20160912', 'dt=20160911', 'dt=1111', 'gg', 'ggg', 'gggg', 'ggggg', 'dt=201609', 'dt=11011', 'g0g', 'gg0g', 'gg0gg', 'gggg0g'
-
+			'dt=20160912', 'dt=20160911', 'dt=20160910', 'dt=20160909','dt=20160908', 'dt=20160907'
 		];
-		$scope.open = function(size){  //打开模态 
+		$scope.open = function(index){  //打开模态
+			var rows = document.getElementById("resultTable").getElementsByTagName("tr").item(index + 1);
+			var ii = rows.getElementsByTagName('td');
+			var table = ii[0].textContent;
+        	console.log(table);
+			console.log(ii[1].textContent.trim());
+			var hasPartition = ii[1].textContent.trim();
+			$scope.selectedTable = {name: table, partitions: $scope.partitions};
+			console.log(hasPartition.search("partition"));
+			if (hasPartition.search("partition") != -1) {
+				var html = "select.html";
+			} else {
+				var html = "input.html";
+			}
             var modalInstance = $modal.open({
-                templateUrl : 'select.html',  //指向上面创建的视图
+                templateUrl : html,  //指向上面创建的视图
                 controller : 'partitionSelectCtl',// 初始化模态范围
-                size : size, //大小配置
+                size : table,
                 resolve : {
-                    partitions : function(){
-                        return $scope.partitions;
+                    selectedTable : function(){
+                        return $scope.selectedTable;
                     }
                 }
-            })
-            modalInstance.size = size;
-            modalInstance.result.then(function(selectedItem){  
-                $scope.selected = selectedItem;
+            });
+            modalInstance.size = table;
+            modalInstance.result.then(function(selectedItem){
+//				console.log(this);
+				ii[2].textContent = selectedItem;
             },function(){
                 $log.info('Modal dismissed at: ' + new Date())
-            })
-        }
+            });
+        };
 
-		$scope.envs = ["pre", "test"]
-		$scope.count = 0
-		$scope.tables = [
-			{name: "table1", partition: true},
-			{name: "table2", partition: true},
-			{name: "table3", partition: false}
-		]
-		$scope.ac = "all"
+
+		$scope.envs = ["pre", "test"];
+		$scope.count = 0;
+//		$scope.tables = [
+//			{name: "table1", partition: true},
+//			{name: "table2", partition: true},
+//			{name: "table3", partition: false}
+//		];
+		$scope.ac = "all";
 		$scope.action = function(v) {
-			console.log(v)
+			console.log(v);
 			$scope.data=v
-		}
+		};
+
+		$scope.refreshDataSource = function () {
+			document.getElementById("refreshBtn").disabled = true;
+			console.log("refresh data source");
+			$http.get("http://localhost:8080/refresh00").then(function successCallback(response) {
+				console.log(response.data);
+			}, function errorCallback(response) {
+				console.log(response.data);
+			})
+		};
 
 		$scope.choose = function(index) {
-			console.log(index)
-			console.log(document.getElementById(index))
-			var checked = document.getElementById(index).checked
-			document.getElementById('btn' + index).disabled = !document.getElementById('btn' + index).disabled
+			console.log(index);
+			console.log(document.getElementById(index));
+			var checked = document.getElementById(index).checked;
+			document.getElementById('btn' + index).disabled = !document.getElementById('btn' + index).disabled;
 
 			if ( checked && $scope.count == 0) {
-				$scope.count += 1
-				document.getElementById("importBtn").disabled = false
+				$scope.count += 1;
+				document.getElementById("importBtn").disabled = false;
 			} else if (checked) {
-				document.getElementById('btn' + index).disabled = false
+				document.getElementById('btn' + index).disabled = false;
 				$scope.count += 1
 			} else if ($scope.count > 1) {
 				$scope.count -= 1
 			} else {
-				$scope.count -= 1
+				$scope.count -= 1;
 				document.getElementById("importBtn").disabled = true
 			}
 			console.log($scope.count)
-		}
+		};
 
 		$scope.t = function(){
 			console.log("0000000000000")
 		}
 
 		$scope.search = function() {
-			console.log($scope.environment);
-			console.log($scope.tableName);
-			var dataBase = $scope.environment;
+			var environment = $scope.environment;
 			var tableName = $scope.tableName;
+			if (environment == undefined) {
+				alert("please choose environment");
+				return;
+			}
 			if (tableName == undefined) {
-				console.log("Please input search table name");
+				alert("Please input search table name");
 				return;
 			}
 			var url = "http://localhost:8080/search";
-			if (dataBase != undefined) url += "/database/" + dataBase;
+			if (environment != undefined) url += "/database/" + environment;
 			url += "/table/" + tableName;
 			console.log(url);
+			url = "http://www.baidu.com";
 			$http.get(url).
 			success(function(response) {
 				$scope.tables = response;
@@ -233,7 +237,7 @@
 				}
 				$scope.ac = "all"
 			}
-			
+
 			alert("success!")
 		}
 	});
@@ -254,6 +258,8 @@
 	});
 
 </script>
+	<!--custom js file-->
+	<script src="js/controllers/partitionSelectCtl.js"></script>
 
 </body>
 </html>

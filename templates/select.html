@@ -1,0 +1,16 @@
+<div class="modal-header">
+    <h2>{{table}}</h2>
+</div>
+<button class="btn btn-primary" ng-click="all()" ng-mode="ac">{{ac}}</button>
+<br/>
+<div class="modal-body"  data-spy="scroll" data-target="#navbarExample" data-offset="50" class="scrollspy-example" style="height: 200px; overflow: auto; position: relative;">
+    <div id="partition-select0">
+        <li  ng-repeat="p in partitions">
+            <input type="checkbox" name="favoriteColors" ng-model="formData.favoriteColors.red"> {{p}}
+        </li>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="ok()">确认</button>
+    <button class="btn btn-warning" ng-click="cancel()">退出</button>
+</div>
