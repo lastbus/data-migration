@@ -9,10 +9,12 @@
 	<script type="text/javascript" src="lib/js/angular/angular.js"></script>
 	<title>Angular JS Test</title>
 </head>
-<body ng-app='test', ng-controller="testCtrl">
+<body ng-app='test', ng-controller="testCtrl" ng-init="price = 1; amount=3; firstName='aaa'">
 	price: <input type="text" name="" ng-model="price" placeholder="input price">
 	<br>
-	amount: <input type="text" name="" ng-model="amount" placeholder="input amount">
+	<p ng-bind="price"></p>
+	<p>姓名为 <span ng-bind="firstName"></span></p>
+	amount: <input type="text" name="" ng-bind="amount" placeholder="input amount">
 	<br>
 
 	total price:  <span ng-bind="price * amount | currency"></span>
