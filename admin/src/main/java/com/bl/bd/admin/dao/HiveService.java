@@ -1,6 +1,6 @@
 package com.bl.bd.admin.dao;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -21,7 +21,7 @@ import java.util.*;
  */
 public class HiveService {
 
-    private static Logger logger = Logger.getLogger(HiveService.class.getName());
+//    private static Logger logger = Logger.getLogger(HiveService.class.getName());
     private static String propsFile = "hive.properties";
 
     /** refresh hive table information, then index into solr */
@@ -30,7 +30,7 @@ public class HiveService {
         try {
             props = loadProperties(propsFile);
         } catch (IOException e) {
-            logger.error("load " + propsFile + "  encounter error : " + e);
+//            logger.error("load " + propsFile + "  encounter error : " + e);
             e.printStackTrace();
             throw new IOException("load " + propsFile + " encounter error!");
         }
@@ -54,7 +54,7 @@ public class HiveService {
                             solrInputDocument.addField("payloads", t);
                             solrClient.add(solrInputDocument);
                             solrClient.commit();
-                            logger.info("indexed " + t);
+//                            logger.info("indexed " + t);
                         }
                     }
                 }
@@ -83,7 +83,7 @@ public class HiveService {
      * get tables from a hive url connection
      */
     public static Map<String, List<String>> fetchTables(String url) throws ClassNotFoundException, SQLException {
-        logger.info(url);
+//        logger.info(url);
         Map<String, List<String>> map = new HashMap<>();
 
         Class.forName("org.apache.hive.jdbc.HiveDriver");
@@ -92,7 +92,7 @@ public class HiveService {
         String databases = "show databases";
         ResultSet rs = stmt.executeQuery(databases);
         while (rs.next()) {
-            logger.debug(rs.getString(1));
+//            logger.debug(rs.getString(1));
             map.put(rs.getString(1), null);
         }
         for (String key : map.keySet()) {
@@ -100,11 +100,11 @@ public class HiveService {
             stmt.execute("use " + key);
             rs = stmt.executeQuery("show tables");
             while (rs.next()) {
-                logger.debug(rs.getString(1));
+//                logger.debug(rs.getString(1));
                 list.add(rs.getString(1));
             }
             map.put(key, list);
-            logger.debug(key + "  has tables :  " + list.size());
+//            logger.debug(key + "  has tables :  " + list.size());
         }
 
         return map;

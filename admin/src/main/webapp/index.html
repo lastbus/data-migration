@@ -107,18 +107,19 @@
 		$scope.partitions = [
 			'dt=20160912', 'dt=20160911', 'dt=20160910', 'dt=20160909','dt=20160908', 'dt=20160907'
 		];
-		$scope.open = function(index){  //打开模态
+		$scope.open = function(index) {  //打开模态
 			var rows = document.getElementById("resultTable").getElementsByTagName("tr").item(index + 1);
 			var ii = rows.getElementsByTagName('td')
         	var table = ii[0].textContent;
 			console.log(ii[1].textContent.trim());
 			$scope.selectedTable = {name: table, partitions: $scope.partitions};
 			var hasPartition = ii[1].textContent.trim();
-			if (hasPartition.search("partition") != -1) {
-				var html = "select.html";
-			} else {
-				var html = "input.html";
-			}
+//			if (hasPartition.search("partition") != -1) {
+//				var html = "select.html";
+//			} else {
+//				var html = "input.html";
+//			}
+			var html = (hasPartition.search("partition") != -1) ? "select.html" : "input.html";
             var modalInstance = $modal.open({
                 templateUrl : html,  //指向上面创建的视图
                 controller : 'partitionSelectCtl',// 初始化模态范围
@@ -130,6 +131,7 @@
                 }
             });
             modalInstance.size = table;
+
             modalInstance.result.then(function(selectedItem){
 				ii[2].textContent = selectedItem;
             },function(){
@@ -182,11 +184,8 @@
 				document.getElementById("importBtn").disabled = true
 			}
 			console.log($scope.count)
-		}
+		};
 
-		$scope.t = function(){
-			console.log("0000000000000")
-		}
 
 		$scope.search = function() {
 			var environment = $scope.environment;
@@ -232,7 +231,6 @@
 	});
 
 	// filter
-
 	app.filter('partition', function() {
 		return function(partition) {
 			var act = "error";
