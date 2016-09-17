@@ -9,3 +9,7 @@ It's never too late to learn.
 ## third edit begin     ##
 Constant dropping wears the stone
 ## third edit end       ##
+
+##  fourth edit begin  ##
+Constant dropping wears the stone
+## fourth edit end     ##
