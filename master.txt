@@ -1,0 +1,4 @@
+I add a file in master branch, then commit it to local repostory, meanwhile,
+I also add a file in anther branch called test-branch which is alse commit 
+to local repository, after then, in master branch, I type "git push", 
+let'us see what happpend!
