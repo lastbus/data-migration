@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap-theme.css">
+	<link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap.css">
+
+	<style type="text/css">
+    table {
+        border: solid 1px #000000;
+        margin: 0px auto;
+    }
+
+    td {
+        padding: 10px 10px 10px 20px;
+        margin: 0px;
+        border: solid 1px #000000;
+    }
+
+    tr {
+        margin: 0px;
+        padding: 0px;
+
+    }
+
+    .title {
+        background-color: #207ef0;
+        text-align: center;
+        color: #ffffff;
+    }
+
+    ul {
+        list-style: none;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    li {
+        float: left;
+        margin: 10px;
+    }
+</style>
+
+
+	<script src="lib/js/bootstrap/js/jquery-3.1.0.js"></script>
+	<script src="lib/js/bootstrap/js/bootstrap.js"></script>
+
+	<script src="lib/js/angular/angular.js"></script>
+	<script src="lib/js/angular/angular-route.js"></script>
+	<title>Pagination Study</title>
+</head>
+<body ng-app="pagination" ng-controller="paginationCtrl">
+
+<script type="text/ng-template" id="student.html">
+	
+	<table cellspacing="0">
+    <tr>
+        <td class="title">ID</td>
+        <td>{{student.id}}</td>
+    </tr>
+    <tr>
+        <td class="title">Name</td>
+        <td>{{student.name}}</td>
+    </tr>
+    <tr>
+        <td class="title">Sex</td>
+        <td>{{student.sex}}</td>
+    </tr>
+    <tr>
+        <td class="title">Age</td>
+        <td>{{student.age}}</td>
+    </tr>
+    <tr>
+        <td class="title">Courses</td>
+        <td>
+            <ul>
+                <li ng-repeat="course in student.courses">{{course}}</li>
+            </ul>
+        </td>
+    </tr>
+</table>
+
+
+</script>
+
+
+<div ng-view></div>
+<div class="turnPageButtonArea">
+    <button ng-click="previous()">Previous</button>
+    <button ng-click="next()">Next</button>
+    <input type="number" ng-model="currentPage" class="pageNum">
+    <button ng-click="goToPage()">Go</button>
+    <span class="totalPages">共 {{allPage}} 页</span>
+</div>
+
+
+	<h1 style="text-align:center">Pagination Study</h1>
+	<div class="container">
+		<!-- <div> -->
+		  <ul class="pagination pagination-lg">
+		    <li class="disabled"><a href="#">&laquo;</a></li>
+		    <li class="active"><span>1 <span class="sr-only">(current)</span></span></li>
+		     <li class="active"><span>1 <span class="sr-only">(current)</span></span></li>
+		    <li id="b" ng-click="select('b')"><a href="#">2</a></li>
+		    <li id="c" ng-click="select('c')"><a href="#">3</a></li>
+		    <li id="e" ng-click="select('e')"><a href="#">4</a></li>
+		    <li id="f" ng-click="select('f')"><a href="#">5</a></li>
+		    <li id="g" ng-click="select('g')"><a href="#">&raquo;</a></li>
+		  </ul>
+		<!-- </div> -->
+	</div>
+
+	<script>
+		var app = angular.module('pagination',['ngRoute'])
+
+		app.config(['$routeProvider', function ($routeProvider) {
+        	$routeProvider
+                .when('/:id', {  //这里的id其实表示的是翻页中的页码
+                    templateUrl: 'student.html',
+                    controller: 'StudentController'
+                })
+                .otherwise({redirectTo: '/1'});//如果没法匹配到url时，直接跳转会第一页
+    	}]);
+
+		app.controller('paginationCtrl', function($rootScope, $scope, $location) {
+
+//给父scope定义函数
+        $scope.previous = function () {
+            //从浏览器的地址栏获取路径，即turnPage.html#/1中井号后面的内容：“ /1 ”
+            //然后通过JavaScript的silce函数取出斜杠后面的字符，并转换成数字。
+            //加 1 还是减 1 要看是在定义的是哪个按钮的功能函数了
+            var pageNum = parseInt($location.path().slice(1)) - 1;
+            //页码是有限的，需要做一些判断
+            if (pageNum < 1) {
+                alert('This is the first page');
+            } else {
+                //如果现在没有处在第一页，则path属性减去1，即向前翻一页。这个翻页的效果就是通过设置url中的path来实现
+                $location.path(pageNum);
+            }
+        };
+        //和上面的previous（）函数类似
+        $scope.next = function () {
+            var pageNum = parseInt($location.path().slice(1)) + 1;
+            if (pageNum > $rootScope.allPage) {
+                alert('This is the last page');
+            } else {
+                $location.path(pageNum);
+            }
+        };
+        //这是一个直接跳转到那个页码的函数，在判断的地方稍微繁琐些
+        $scope.goToPage = function () {
+            //从input输入框绑定的currentPage变量中获取用户输入的值
+            var pageNum = $scope.currentPage;
+            //为了程序的严密和可用性，需要先判断输入是否为空
+            if (pageNum == null || pageNum == undefined || pageNum == "") {
+                alert("try to input a page number");
+                //如果不是空，再判断用户输入的页码是否超出了页码的范围
+                //这里出现了$rootScope这个根域及其属性allPage，该属性的值是页码的总数
+            } else if (!(pageNum >= 1 && pageNum <= $rootScope.allPage)) {
+                alert("The page number is beyond the scope of the number of the students")
+            } else {
+                //如果都没问题了，则修改URL，此时angularJS会捕捉地址栏的变化，然后跳转，细节将在下面讲解。
+                $location.path(pageNum);
+            }
+        };
+
+
+
+
+
+
+
+			$scope.init = 'a'
+
+			$scope.select = function(s) {
+					document.getElementById($scope.init).setAttribute("class","");
+					document.getElementById(s).setAttribute("class","active");
+					$scope.init = s;
+			}
+		});
+
+		app.controller('StudentController', function ($rootScope, $scope, $http, $routeParams) {
+        //$http的get方法与远程的一个文件发出请求，如果成功，则执行一个回调函数，函数的参数就是从远端文件里拿到的数据，这个数据可以是个数组，也可以是个对象。
+        //那么我们这次拿到的是一个json数组，数组的元素是一个个的对象。
+            //把数组里的一个元素取出来，赋给模板子作用域对象的属性上。由于json数组的id是从1开始写的，而返回的数据是个数组，下标从0开始，所以要减去1
+            data = [
+								  {
+								    "id": 1,
+								    "name": "Frank Li",
+								    "sex": "male",
+								    "age": "30",
+								    "courses": [
+								      "HTML",
+								      "CSS",
+								      "Javascript",
+								      "Java",
+								      "PHP",
+								      "MySQL",
+								      "Ubuntu",
+								      "MongoDB",
+								      "NodeJS",
+								      "AngularJS",
+								      "Photoshop",
+								      "LESS",
+								      "Bootstrap"
+								    ]
+								  },
+								  {
+								    "id": 2,
+								    "name": "Cherry",
+								    "sex": "female",
+								    "age": "27",
+								    "courses": [
+								      "Anderson's Fairy Tales",
+								      "Pride and Prejudice",
+								      "Vanity Fair",
+								      "Oliver Twist"
+								    ]
+								  },
+								  {
+								    "id": 3,
+								    "name": "John Liu",
+								    "sex": "male",
+								    "age": "29",
+								    "courses": [
+								      "iology and medical science",
+								      "pplied biology",
+								      "medicine",
+								      "cell biology"
+								    ]
+								  },
+								  {
+								    "id": 4,
+								    "name": "Lucy Mu",
+								    "sex": "female",
+								    "age": "22",
+								    "courses": [
+								      "Introduction to ART ",
+								      "sketch",
+								      "Composition",
+								      "sculpture"
+								    ]
+								  }
+							];
+            //这里顺便把这个数组的元素个数取出来，每个元素就代表以页。那么元素总个数就代表共有多少页。
+            //注意要传递给最高级别的根域对象，因为子域能覆写父域的同名属性；子域如果没有直接赋值，那么子域的同名属性将继承父域同名属性的值；
+            /*我们在回到本文件代码上面的“共 {{allPage}} 页”处，这个就是根域$rootScope的属性。而且在父控制器中并没有特别的赋值。而这个span元素恰好就在父控制器的作用域内，那么这个元素里的allPage属性就会继承父作用域的同名属性allPage的值，也就间接的显示出了总页数。
+            */
+
+            $scope.student = data[$routeParams.id - 1]
+            $rootScope.allPage = data.length;
+
+    });
+
+	</script>
+</body>
+</html>

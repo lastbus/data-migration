@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap-theme.css">
+	<link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap.css">
+	<script src="lib/js/bootstrap/js/jquery-3.1.0.js"></script>
+	<script src="lib/js/bootstrap/js/bootstrap.js"></script>
+
+	<script src="lib/js/angular/angular.js"></script>
+	<script src="lib/js/angular/angular-route.js"></script>
+
+	<title>Location Study</title>
+</head>
+<body ng-app="location" ng-controller="locationCtrl">
+
+<div class="container">
+	<p>
+	absUrl  ===========   {{absUrl}}
+	</p>
+
+	<p>
+		path ======== {{path}}
+	</p>
+
+	<p>
+		host ======  {{host}}
+	</p>
+
+	<p>
+		protocol ========== {{protocol}}
+	</p>
+	<p>
+		port ======= {{port}}
+	</p>
+</div>
+
+<script>
+	
+	angular.module('location', []).controller('locationCtrl',function($scope, $location) {
+		$location.path("abc");
+		$scope.absUrl = $location.absUrl();
+		$scope.path = $location.path();
+		$scope.host = $location.host();
+		$scope.port = $location.port();
+		$scope.protocol = $location.protocol();
+	})
+</script>
+
+</body>
+</html>
