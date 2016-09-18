@@ -14,6 +14,15 @@
 </head>
 <body ng-app="location" ng-controller="locationCtrl">
 
+		<div ng-view></div>
+		<div class="turnPageButtonArea">
+		    <button ng-click="previous()">Previous</button>
+		    <button ng-click="next()">Next</button>
+		    <input type="number" ng-model="currentPage" class="pageNum">
+		    <button ng-click="goToPage()">Go</button>
+		    <span class="totalPages">共 {{allPage}} 页</span>
+		</div>
+
 <div class="container">
 	<p>
 	absUrl  ===========   {{absUrl}}
