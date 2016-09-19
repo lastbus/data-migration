@@ -3,53 +3,86 @@
 <head>
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" src="lib/js/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap-theme.css">
 	<script type="text/javascript" src="lib/js/bootstrap/js/jquery-3.1.0.js"></script>
 	<script type="text/javascript" src="lib/js/bootstrap/js/bootstrap.js"></script>
 
 	<script type="text/javascript" src="lib/js/angular/angular.js"></script>
 	<title>Angular JS Test</title>
 </head>
-<body ng-app='test', ng-controller="testCtrl">
-	price: <input type="text" name="" ng-model="price" placeholder="input price">
+<body>
+
+<div ng-app="myApp" ng-controller="myCtrl">
+	<div>
+	<input type="text" ng-model="word">
 	<br>
-	amount: <input type="text" name="" ng-model="amount" placeholder="input amount">
+	<button  class="btn btn-primary" ng-click="onClick(word)">Provider</button>
+
+	</div>
 	<br>
+	<select ng-model="selectedName">
+		<option ng-repeat="x in names">{{x}}</option>
+	</select>
+	<p>your choose: <span>{{selectedName}}</span></p>
+	<br/>
+	<p>====  ng-option ====</p>
+	<select ng-options="x.site for x in sites" ng-model="site">
+	</select>
+	<p>your choose :  {{site.url}}</p>
+	<br>
+	<p>==== option  ====</p>
+	<select ng-model="site2">
+		<option ng-repeat="x in sites" value="{{x.url}}">{{x.site}}</option>
+	</select>
+	<p>your choose :  {{site2}}</p>
 
-	total price:  <span ng-bind="price * amount | currency"></span>
+	<p> ===  table  ===</p>
+	<table>
+		<tr>
+			<th style="text-align: center">1</th>
+			<th style="text-align: center">2</th>
+			<th style="text-align: center">3</th>
+		</tr>
+		<tr ng-repeat="site in sites" >
+			<td ng-if="$odd" style="background-color:#f1f1f1">{{site.site}}</td>
+			<td ng-if="$even">{{site.site}}</td>
+			<td ng-if="$odd" style="background-color:#f1f1f1">{{site.url}}</td>
+            <td ng-if="$even" >{{site.url}}</td>
+			<td>{{$index}}</td>
+		</tr>
+	</table>
 
-	<p ng-repeat="i in is">{{is}}</p>
-	label:&;<helloWorld></helloWorld>
-	class: &; <div class='hello-world'></div>
-	attribute: <div helloWorld></div>
 
-	{{location}}
+</div>
+
+
+
 	
-</body>
-
-<script type="text/javascript">
-	var app = angular.module('test', []);
-	app.controller('testCtrl', function($scope, $rootScope, $location, $timeout, $interval, time) {
-		$scope.is = [0, 1, 2, 3, 4];
-		$rootScope.is2 = [0, 1, 2, 3, 4];
-
-		$scope.location = $location.absUrl();
-
-		$interval(function() {
-			$scope.location = time.myFunc();
-		}, 1000);
+<script>
+	var app = angular.module('myApp', []);
+	app.config(function ($provide) {
+		console.log("config");
+		$provide.provider('greeting', function() {
+			this.$get = function () {
+				return function (string) {
+					alert("Hello, " + string);
+				};
+			};
+		});
 	});
+	app.controller('myCtrl', function($scope, greeting) {
+		$scope.names = ["Google", "Runoob", "Taobao"];
+		$scope.sites = [
+			{site: "Google", url: "google.com"},
+			{site: "Baidu", url: "baidu.com"}
+		];
 
-	app.directive("helloWorld", function() {
-		return {
-			restrict: "C",
-			template:"<h1>Hello world!</h1>"
+		$scope.onClick = function (name) {
+			greeting(name)
 		};
 	});
-
-	app.service('time', function() {
-		this.myFunc = function() {
-			return new Date();
-		}
-	})
 </script>
+</body>
+
+
 </html>

@@ -23,10 +23,12 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="admin" />
+        <module name="recommend" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="admin" target="1.8" />
+      <module name="recommend" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

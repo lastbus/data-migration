@@ -11,7 +11,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.eclipse.jetty.util.ajax.JSON;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 

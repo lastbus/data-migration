@@ -1,0 +1,135 @@
+<!doctype html>
+<html ng-app="myApp">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .page-list .pagination {float:left;}
+        .page-list .pagination span {cursor: pointer;}
+        .page-list .pagination .separate span{cursor: default; border-top:none;border-bottom:none;}
+        .page-list .pagination .separate span:hover {background: none;}
+        .page-list .page-total {float:left; margin: 25px 20px;}
+        .page-list .page-total input, .page-list .page-total select{height: 26px; border: 1px solid #ddd;}
+        .page-list .page-total input {width: 40px; padding-left:3px;}
+        .page-list .page-total select {width: 50px;}
+    </style>
+    <link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap-theme.css">
+    <link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap.css">
+    <script src="lib/js/bootstrap/js/jquery-3.1.0.js"></script>
+    <script src="lib/js/bootstrap/js/bootstrap.js"></script>
+
+    <script src="lib/js/angular/angular.js"></script>
+    <script src="lib/js/angular/angular-route.js"></script>
+
+</head>
+<body ng-controller="testController">
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <td>ID</td>
+                <td>FirstName</td>
+                <td>LastName</td>
+                <td>Status</td>
+                <td>Address</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="emp in persons">
+                <td>{{emp.ID}}</td>
+                <td>{{emp.FirstName}}</td>
+                <td>{{emp.LastName}}</td>
+                <td>{{emp.Status}}</td>
+                <td>{{emp.Address}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+<tm-pagination conf="paginationConf"></tm-pagination>
+
+<script>
+    var app = angular.module('myApp', ['tm.pagination']);
+
+    //业务类
+    app.factory('BusinessService', ['$http', function ($http) {
+        var list = function (postData) {
+            return [{ID:0, FirstName: "a", LastName: "b", Status: "s", Address: "a"},
+                    {ID:1, FirstName: "a", LastName: "b", Status: "s", Address: "a"},
+                    {ID:2, FirstName: "a", LastName: "b", Status: "s", Address: "a"},
+                    {ID:3, FirstName: "a", LastName: "b", Status: "s", Address: "a"},
+                    {ID:4, FirstName: "a", LastName: "b", Status: "s", Address: "a"},
+                    {ID:5, FirstName: "a", LastName: "b", Status: "s", Address: "a"},
+                    {ID:6, FirstName: "a", LastName: "b", Status: "s", Address: "a"}];
+        }
+ 
+        return {
+            list: function (postData) {
+                return list.slice(0, 2);
+            }
+        }
+    }]);
+
+    app.controller('testController', function($scope){
+        /**
+         * currentPage: Current page number, default 1
+         * totalItems: Total number of items in all pages
+         * itemsPerPage:  number of items per page, default 15
+         * onChange: when the pagination is change, it will excute the function.
+         *
+         * pagesLength: number for pagination size, default 9
+         * perPageOptions: defind select how many items in a page, default [10, 15, 20, 30, 50]
+         *
+         */
+        // $scope.paginationConf = {
+        //     currentPage: 1,
+        //     totalItems: 8000,
+        //     itemsPerPage: 15,
+        //     pagesLength: 15,
+        //     perPageOptions: [10, 20, 30, 40, 50],
+        //     onChange: function(){
+
+        //     }
+        // };
+
+
+
+
+
+            var GetAllEmployee = function () {
+ 
+            var postData = {
+                pageIndex: $scope.paginationConf.currentPage,
+                pageSize: $scope.paginationConf.itemsPerPage
+            }
+ 
+            // BusinessService.list(postData){
+                $scope.paginationConf.totalItems = 100;
+                $scope.persons = 
+                    [{"emp": {ID:0, FirstName: "a", LastName: "b", Status: "s", Address: "a"}},
+                     {"emp": {ID:0, FirstName: "a", LastName: "b", Status: "s", Address: "a"}},
+                     {"emp": {ID:0, FirstName: "a", LastName: "b", Status: "s", Address: "a"}},
+                     {"emp": {ID:0, FirstName: "a", LastName: "b", Status: "s", Address: "a"}}];
+            // };
+ 
+        }
+ 
+        //配置分页基本参数
+        $scope.paginationConf = {
+            currentPage: 1,
+            itemsPerPage: 5
+        };
+ 
+        /***************************************************************
+        当页码和页面记录数发生变化时监控后台查询
+        如果把currentPage和itemsPerPage分开监控的话则会触发两次后台事件。
+        ***************************************************************/
+        $scope.$watch('paginationConf.currentPage + paginationConf.itemsPerPage', GetAllEmployee);
+
+    });
+</script>
+<script src="js/tm.pagination.js"></script>
+
+
+
+
+</body>
+</html>
