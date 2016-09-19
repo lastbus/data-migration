@@ -69,17 +69,21 @@
 	</div>
 	<br/>
 	<div>
-		<table class="table" id="resultTable">
+		<table class="table table-bordered" id="resultTable" ng-show="success">
 			<tr>
-				<th class="col-lg-3" style="text-align: center">Table Name</th>
+				<td class="col-lg-1" style="text-align: center">environment</td>
+				<td class="col-lg-1" style="text-align: center">database</td>
+				<th class="col-lg-3" style="text-align: center">table Name</th>
 				<th class="col-lg-1" style="text-align: center">choose</th>
-				<th class="col-lg-7" style="text-align: center">partition/records</th>
+				<th class="col-lg-6" style="text-align: center">partition/records</th>
 				<th class="col-lg-1" style="text-align: center">output</th>
 				<th>action</th>
 			</tr>
 
 			<tr ng-repeat="table in tables">
-				<td>{{table.name}}</td>
+				<td>{{table.env}}</td>
+				<td>{{table.database}}</td>
+				<td>{{table.table}}</td>
 				<td>
 					<button ng-click="open($index)">{{table.partition | partition}}</button>
 				</td>
@@ -102,14 +106,14 @@
 <script type="text/javascript">
 	var app = angular.module('main', ['ui.bootstrap']);
 	app.controller('dropdownCtl', function($scope, $http, $modal, $log) {
-
+		$scope.success = true;
 		// modal
 		$scope.partitions = [
 			'dt=20160912', 'dt=20160911', 'dt=20160910', 'dt=20160909','dt=20160908', 'dt=20160907'
 		];
 		$scope.open = function(index){  //打开模态
 			var rows = document.getElementById("resultTable").getElementsByTagName("tr").item(index + 1);
-			var ii = rows.getElementsByTagName('td')
+			var ii = rows.getElementsByTagName('td');
         	var table = ii[0].textContent;
 			console.log(ii[1].textContent.trim());
 			$scope.selectedTable = {name: table, partitions: $scope.partitions};
@@ -139,11 +143,6 @@
 
 		$scope.envs = ["pre", "test"];
 		$scope.count = 0;
-//		$scope.tables = [
-//			{name: "table1", partition: true},
-//			{name: "table2", partition: true},
-//			{name: "table3", partition: false}
-//		];
 		$scope.ac = "all";
 		$scope.action = function(v) {
 			console.log(v);
@@ -182,11 +181,11 @@
 				document.getElementById("importBtn").disabled = true
 			}
 			console.log($scope.count)
-		}
+		};
 
 		$scope.t = function(){
 			console.log("0000000000000")
-		}
+		};
 
 		$scope.search = function() {
 			var environment = $scope.environment;
@@ -201,9 +200,19 @@
 			console.log('请求:   ' + url);
 			$http.get(url).
 			then(function successCallback(response){
-				console.log("success : " + response.data.length);
-				$scope.tables = response.data;
+				console.log("success : " + response.data.result.length);
+				if (response.data.status = "ok") {
+					console.log("yes");
+					$scope.tables = response.data.result;
+					$scope.success = true;
+				} else {
+					console.log("no");
+					$scope.success = false;
+					$scope.tables = {};
+				}
+
 			}, function errorCallback(response) {
+				$scope.success = false;
 				console.log('error: ' + response);
 				$scope.tables = [
 					{name: "error0", partition: true},

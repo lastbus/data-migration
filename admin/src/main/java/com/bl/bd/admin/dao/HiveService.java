@@ -3,6 +3,7 @@ package com.bl.bd.admin.dao;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrResponse;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 /**
  * Created by MK33 on 2016/9/13.
@@ -39,6 +41,7 @@ public class HiveService {
         }
         SolrConnection solrConn = SolrConnection.getInstance();
         SolrClient solrClient = solrConn.getHttpClientConn();
+        int count = 0;
         for (Object type : props.keySet()) {
             String url = props.getProperty(type.toString());
             try {
@@ -49,11 +52,11 @@ public class HiveService {
                         for (String t : listTable) {
                             SolrInputDocument solrInputDocument = new SolrInputDocument();
                             solrInputDocument.addField("id", type + "_" + dataBase + "_" + t);
-                            solrInputDocument.addField("title", type);
-                            solrInputDocument.addField("name", dataBase);
-                            solrInputDocument.addField("payloads", t);
+                            solrInputDocument.addField("environment", type);
+                            solrInputDocument.addField("database", dataBase);
+                            solrInputDocument.addField("table", t);
                             solrClient.add(solrInputDocument);
-                            solrClient.commit();
+                            if (count % 100 == 0) solrClient.commit();
                             logger.info("indexed " + t);
                         }
                     }
@@ -64,6 +67,13 @@ public class HiveService {
                 e.printStackTrace();
             } catch (SolrServerException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    solrClient.commit();
+                } catch (SolrServerException e) {
+                    logger.error("solr commit encounter a error: " + e);
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -113,14 +123,37 @@ public class HiveService {
 
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
-//        try {
-//            refreshIndex();
-//        } catch (IOException e) {
-//            System.out.println("refresh encounter error");
-//            e.printStackTrace();
-//        }
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Begin to refresh " + new Date());
+                try {
+                    HiveService.refreshIndex();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("refresh ends " + new Date());
+            }
+        };
+        Thread t = new Thread(runnable);
+        t.start();
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.setFields("environment", "table", "database");
+        solrQuery.set("q", "table:s02* AND database:*");
+        SolrClient solrClient = SolrConnection.getInstance().getHttpClientConn();
 
-        query();
+        try {
+            QueryResponse response = solrClient.query(solrQuery);
+            SolrDocumentList docList = response.getResults();
+            System.out.println(docList.toString());
+        } catch (SolrServerException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
     }
 
 

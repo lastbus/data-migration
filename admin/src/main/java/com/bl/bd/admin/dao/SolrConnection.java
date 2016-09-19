@@ -8,21 +8,19 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
  */
 public class SolrConnection {
     private static SolrConnection solrConnection = null;
-    private static HttpSolrClient solrClient = null;
     private static String url = "http://localhost:8983/solr/test-0";
 
     public SolrClient getHttpClientConn() {
-//        if (solrClient == null) {
-            solrClient = new HttpSolrClient.Builder(url).build();
-//        }
+         HttpSolrClient solrClient = new HttpSolrClient.Builder(url).build();
         return solrClient;
     }
 
     private SolrConnection() {}
 
     public static SolrConnection getInstance() {
-        if (solrClient == null) {
-            return new SolrConnection();
+        if (solrConnection == null) {
+            solrConnection = new SolrConnection();
+            return solrConnection;
         } else {
             return solrConnection;
         }
