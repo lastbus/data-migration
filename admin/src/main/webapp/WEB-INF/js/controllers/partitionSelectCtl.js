@@ -11,7 +11,7 @@ app.controller('partitionSelectCtl', function($scope, $modalInstance, selectedTa
         var p = document.getElementById('partition-select0').getElementsByTagName('input');
         var ps = [];
         for (i = 0; i < p.length;  i++) {
-            ;if (p[i].checked) {
+            if (p[i].checked) {
                 ps.push(p[i].value)
             }
         }

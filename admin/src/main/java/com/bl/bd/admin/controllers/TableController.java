@@ -8,7 +8,6 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.eclipse.jetty.util.ajax.JSON;
 import org.json.JSONArray;
 import org.json.JSONObject;
 //import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +33,7 @@ public class TableController {
     @RequestMapping(value = "/search/database/{dataBase}/table/{table}", method = RequestMethod.GET)
     @ResponseBody
     public String tables(@PathVariable String dataBase, @PathVariable String table) {
-        System.out.println("/search/database/" + dataBase + "/table/" +table);
+        System.out.println("/search/database/" + dataBase + "/table/" + table);
         SolrClient solrClient = SolrConnection.getInstance().getHttpClientConn();
         SolrQuery solrQuery = new SolrQuery();
         String normalDataBase = dataBase;
@@ -52,8 +51,10 @@ public class TableController {
             SolrDocumentList docList = response.getResults();
             int number = (int) docList.getNumFound();
             System.out.println("There are " + number + "  records.");
+            jsonObject.put("total", number);
             JSONArray jsonArray = new JSONArray();
             Iterator<SolrDocument> iterator = docList.iterator();
+            int i = 0;
             while (iterator.hasNext()) {
                 JSONObject json = new JSONObject();
                 SolrDocument solrDocument = iterator.next();
@@ -62,9 +63,11 @@ public class TableController {
                 json.put("partition", solrDocument.getFirstValue("table").hashCode() % 2 == 0 ? true : false);
                 json.put("table", solrDocument.getFirstValue("table"));
                 jsonArray.put(json);
+                i += 1;
             }
-            jsonObject.put("status", "ok");
-            jsonObject.put("result", jsonArray);
+            jsonObject.put("count", i);
+            jsonObject.put("status", "OK");
+            jsonObject.put("tables", jsonArray);
             System.out.println("result: " + jsonObject);
             System.out.println("count: " + jsonArray.length());
             return jsonObject.toString();
@@ -75,9 +78,45 @@ public class TableController {
             System.out.println("IOException");
             e.printStackTrace();
         }
-        jsonObject.put("status", "error");
+        jsonObject.put("status", "ERROR");
         return jsonObject.toString();
     }
+
+    @RequestMapping(value = "/search/database/{database}/table/{table}/{currentPage}/{sizePerPage}", method = RequestMethod.GET)
+    @ResponseBody
+    public String tables(@PathVariable String database, @PathVariable String table, @PathVariable int currentPage, @PathVariable int sizePerPage) {
+        System.out.println(String.format("/search/database/%s/table/%s/%s/%s", database, table, currentPage, sizePerPage));
+        SolrClient solrClient = SolrConnection.getInstance().getHttpClientConn();
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.setFields("environment", "database", "table");
+        String normalDataBase = database;
+        if (!database.startsWith("*")) normalDataBase = "*" + database;
+        if (!database.endsWith("*")) normalDataBase += "*";
+        String normalTable = table;
+        if (!table.startsWith("*")) normalTable = "*" + table;
+        if (!table.endsWith("*")) normalTable += "*";
+        solrQuery.add("q", normalDataBase + " AND " + normalTable);
+        solrQuery.setStart((currentPage - 1) * sizePerPage);
+        solrQuery.setRows(sizePerPage);
+        System.out.println(solrQuery.toString());
+        JSONObject jsonObject = new JSONObject();
+        try {
+            QueryResponse queryResponse = null;
+            queryResponse = solrClient.query(solrQuery);
+            SolrDocumentList results = queryResponse.getResults();
+            long total = results.getNumFound();
+            jsonObject.put("total", total);
+            JSONArray jsonArray = new JSONArray();
+            
+        } catch (SolrServerException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
 
     @RequestMapping(value = "/search/table/{table}", method = RequestMethod.GET)
     @ResponseBody

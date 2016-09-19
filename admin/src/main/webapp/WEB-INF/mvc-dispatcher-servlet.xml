@@ -19,6 +19,6 @@
     </bean>
     <mvc:resources mapping="/lib/**" location="/WEB-INF/lib/" />
     <mvc:resources mapping="/js/**" location="/WEB-INF/js/" />
-    <mvc:resources mapping="/templates" location="WEB-INF/templates" />
+    <mvc:resources mapping="/templates/**" location="WEB-INF/templates/" />
 
 </beans>

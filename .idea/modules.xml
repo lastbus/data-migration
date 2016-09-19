@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/admin/admin.iml" filepath="$PROJECT_DIR$/admin/admin.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/data-migration.iml" filepath="$PROJECT_DIR$/.idea/data-migration.iml" />
-      <module fileurl="file://$PROJECT_DIR$/admin/recommend.iml" filepath="$PROJECT_DIR$/admin/recommend.iml" />
     </modules>
   </component>
 </project>

@@ -11,8 +11,7 @@ public class SolrConnection {
     private static String url = "http://localhost:8983/solr/test-0";
 
     public SolrClient getHttpClientConn() {
-         HttpSolrClient solrClient = new HttpSolrClient.Builder(url).build();
-        return solrClient;
+         return new HttpSolrClient.Builder(url).build();
     }
 
     private SolrConnection() {}

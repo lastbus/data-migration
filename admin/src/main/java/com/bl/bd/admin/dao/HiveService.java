@@ -56,13 +56,10 @@ public class HiveService {
                             solrInputDocument.addField("database", dataBase);
                             solrInputDocument.addField("table", t);
                             solrClient.add(solrInputDocument);
-<<<<<<< HEAD
                             if (count % 100 == 0) solrClient.commit();
-                            logger.info("indexed " + t);
-=======
+//                            logger.info("indexed " + t);
                             solrClient.commit();
 //                            logger.info("indexed " + t);
->>>>>>> 2f888e94ce433112a4edf06c11080c3f17ec2ae0
                         }
                     }
                 }
@@ -76,7 +73,7 @@ public class HiveService {
                 try {
                     solrClient.commit();
                 } catch (SolrServerException e) {
-                    logger.error("solr commit encounter a error: " + e);
+//                    logger.error("solr commit encounter a error: " + e);
                     e.printStackTrace();
                 }
             }
