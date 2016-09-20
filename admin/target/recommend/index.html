@@ -49,6 +49,7 @@
 	<div>
 		<table class="table table-bordered" id="resultTable" ng-show="success">
 			<tr>
+				<td class="col-lg-1" style="text-align: center">ID</td>
 				<td class="col-lg-1" style="text-align: center">environment</td>
 				<td class="col-lg-1" style="text-align: center">database</td>
 				<th class="col-lg-3" style="text-align: center">table Name</th>
@@ -59,6 +60,7 @@
 			</tr>
 
 			<tr ng-repeat="table in tables">
+				<td>{{table.id}}</td>
 				<td>{{table.env}}</td>
 				<td>{{table.database}}</td>
 				<td>{{table.table}}</td>

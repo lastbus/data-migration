@@ -8,7 +8,7 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
  */
 public class SolrConnection {
     private static SolrConnection solrConnection = null;
-    private static String url = "http://localhost:8983/solr/test-0";
+    private static String url = "http://localhost:8983/solr/test";
 
     public SolrClient getHttpClientConn() {
          return new HttpSolrClient.Builder(url).build();

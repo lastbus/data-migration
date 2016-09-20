@@ -1,12 +1,9 @@
 
 
 app.controller('partitionSelectCtl', function($scope, $modalInstance, selectedTable) {
-    $scope.table = selectedTable.name;
+    $scope.table = selectedTable.table;
     $scope.ac = 'all';
-    $scope.partitions = selectedTable.partitions;
-    $scope.selected = {
-        partition : $scope.partitions[0]
-    };
+    $scope.partitions = selectedTable.partition.hasPartition ? selectedTable.partition.partition.split(",") : "";
     $scope.ok = function(){
         var p = document.getElementById('partition-select0').getElementsByTagName('input');
         var ps = [];
@@ -24,9 +21,11 @@ app.controller('partitionSelectCtl', function($scope, $modalInstance, selectedTa
         $modalInstance.close($scope.recordNumber);
     };
 
-    $scope.cancel = function(){
+    $scope.cancel = function() {
+        console.log("dismiss");
         $modalInstance.dismiss('cancel'); // 退出
     };
+
 
     $scope.all = function () {
         var input = document.getElementById("partition-select0").getElementsByTagName("input")

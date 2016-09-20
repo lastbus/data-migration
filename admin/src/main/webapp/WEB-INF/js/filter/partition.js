@@ -6,7 +6,7 @@
 app.filter('partition', function() {
     return function(partition) {
         var act = "error";
-        if (partition) {
+        if (partition.hasPartition) {
             act = "select partition";
         } else {
             act = "select records";
