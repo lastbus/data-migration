@@ -26,7 +26,7 @@ public class HiveService {
 //    private static Logger logger = Logger.getLogger(HiveService.class.getName());
     private static String propsFile = "hive.properties";
 
-    /** refresh hive table information, then index into solr */
+    /** fetch hive table information, then index into solr */
     public static void refreshIndex() throws IOException {
         Properties props = null;
         try {
@@ -41,6 +41,16 @@ public class HiveService {
         }
         SolrConnection solrConn = SolrConnection.getInstance();
         SolrClient solrClient = solrConn.getHttpClientConn();
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            conn = HiveConnection.getInstance().getConnection();
+            stmt = conn.createStatement();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         int count = 0;
         for (Object type : props.keySet()) {
             String url = props.getProperty(type.toString());
@@ -55,6 +65,13 @@ public class HiveService {
                             solrInputDocument.addField("environment", type);
                             solrInputDocument.addField("database", dataBase);
                             solrInputDocument.addField("table", t);
+                            boolean partition = hasPartition(stmt, dataBase, t);
+                            if (partition) {
+                                solrInputDocument.addField("hasPartition", true);
+                                solrInputDocument.addField("partition", getPartitions(stmt, dataBase, t));
+                            } else {
+                                solrInputDocument.addField("hasPartition", false);
+                            }
                             solrClient.add(solrInputDocument);
                             if (count % 100 == 0) solrClient.commit();
 //                            logger.info("indexed " + t);
@@ -72,8 +89,13 @@ public class HiveService {
             } finally {
                 try {
                     solrClient.commit();
+                    if (conn != null) {
+                        conn.close();
+                    }
                 } catch (SolrServerException e) {
 //                    logger.error("solr commit encounter a error: " + e);
+                    e.printStackTrace();
+                } catch (SQLException e) {
                     e.printStackTrace();
                 }
             }
@@ -91,13 +113,30 @@ public class HiveService {
         return properties;
     }
 
+    public static boolean hasPartition(Statement stmt, String database, String table) throws SQLException {
+        ResultSet rs = stmt.executeQuery("show CREATE TABLE " + database + "." + table);
+        while (rs.next()) {
+            if (rs.getString(1).contains("PARTITIONED BY")) return true;
+        }
+        return false;
+    }
+
+    public static String getPartitions(Statement stmt, String database, String table) throws SQLException {
+        String q = "show partitions " + database + "." + table;
+        ResultSet rs = stmt.executeQuery(q);
+        StringBuffer sb = new StringBuffer();
+        while (rs.next()) {
+            sb.append(rs.getString(1).trim()).append(",");
+        }
+        return sb.length() == 0 ? "" : sb.subSequence(0, sb.length() - 2).toString();
+    }
+
     /**
-     * get tables from a hive url connection
+     * get tables from a hive url connection and partition metadata
      */
     public static Map<String, List<String>> fetchTables(String url) throws ClassNotFoundException, SQLException {
 //        logger.info(url);
         Map<String, List<String>> map = new HashMap<>();
-
         Class.forName("org.apache.hive.jdbc.HiveDriver");
         Connection conn = DriverManager.getConnection(url);
         Statement stmt = conn.createStatement();
@@ -110,21 +149,49 @@ public class HiveService {
         for (String key : map.keySet()) {
             List<String> list = new ArrayList<>();
             stmt.execute("use " + key);
-            rs = stmt.executeQuery("show tables");
-            while (rs.next()) {
+            ResultSet rs2 = stmt.executeQuery("show tables");
+            while (rs2.next()) {
 //                logger.debug(rs.getString(1));
-                list.add(rs.getString(1));
+                list.add(rs2.getString(1));
             }
             map.put(key, list);
 //            logger.debug(key + "  has tables :  " + list.size());
         }
-
+        conn.close();
         return map;
 
     }
 
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
+
+        String url = "jdbc:hive2://m78sit:10000/default;user=hive;password=123456";
+        Class.forName("org.apache.hive.jdbc.HiveDriver");
+        Connection conn = DriverManager.getConnection(url);
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery("show create TABLE recommendation.user_behavior_raw_data");
+        int i = 0;
+        StringBuilder sb = new StringBuilder();
+        boolean partition = hasPartition(rs);
+        if (partition) {
+            ResultSet partitionRS = stmt.executeQuery("show partitions recommendation.user_behavior_raw_data");
+            while (partitionRS.next())
+                sb.append(partitionRS.getString(1).trim()).append(",");
+//                System.out.println(partitionRS.getString(1));
+        } else {
+            System.out.println("no partition");
+        }
+        System.out.println(sb.subSequence(0, sb.length() - 2).toString());
+    }
+
+    public static boolean hasPartition(ResultSet rs) throws SQLException {
+        while (rs.next()) {
+            if (rs.getString(1).contains("PARTITIONED BY")) return true;
+        }
+        return false;
+    }
+
+    public static void multiThread() {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -153,8 +220,6 @@ public class HiveService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
 
     }
 
