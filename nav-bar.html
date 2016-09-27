@@ -7,9 +7,12 @@
     <script src="lib/js/bootstrap/js/jquery-3.1.0.js"></script>
     <script src="lib/js/bootstrap/js/bootstrap.js"></script>
 
+    <script type="text/javascript" src="lib/js/angular/angular.js"></script>
+    <script type="text/javascript" src="lib/js/angular/angular-route.js"></script>
+
 	<title>nav bar study</title>
 </head>
-<body>
+<body ng-app='nav1'>
 
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
@@ -17,7 +20,7 @@
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
         <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar">000</span>
+        <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
@@ -27,8 +30,8 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Link</a></li>
-        <li><a href="#">Link</a></li>
+        <li class="active"><a href="#/">Link</a></li>
+        <li><a href="#/one">Link</a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
@@ -66,12 +69,29 @@
 </nav>
 
 <h1 style="text-align:center"> nav bar study</h1>
+<div ng-view></div>
 
-<ul class="nav nav-tabs" role="tablist">
-  <li role="presentation" class="active"><a href="#">Home</a></li>
-  <li role="presentation"><a href="#">Profile</a></li>
-  <li role="presentation"><a href="#">Messages</a></li>
-</ul>
+  <script type="text/javascript">
+    var app = angular.module('nav1', ['ngRoute']);
+    // app.config(['$routeProvider', function($routeProvider){
+    //             $routeProvider
+    //             .when('/',{template:'这是首页页面'})
+    //             .when('/computers',{template:'这是电脑分类页面'})
+    //             .when('/printers',{template:'这是打印机页面'})
+    //             .otherwise({redirectTo:'/'});
+    //         }]);
+
+    app.config(['$routeProvider', function($routeProvider) {
+      $routeProvider
+      .when('/', {template: 'default'})
+      .when('/one', {template: 'One'})
+      .otherwise({redirectTo: '/'})
+
+    }]);
+
+
+  </script>
 
 </body>
+
 </html>
