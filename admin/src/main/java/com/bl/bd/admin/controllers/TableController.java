@@ -10,7 +10,6 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.json.JSONArray;
 import org.json.JSONObject;
-//import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +34,7 @@ public class TableController {
         System.out.println(String.format("/search/database/%s/table/%s/%s/%s", database, table, currentPage, sizePerPage));
         SolrClient solrClient = SolrConnection.getInstance().getHttpClientConn();
         SolrQuery solrQuery = new SolrQuery();
-        solrQuery.setFields("environment", "database", "table");
+        solrQuery.setFields("environment", "database", "table", "hasPartition", "partition");
         String normalDataBase = database;
         if (!database.startsWith("*")) normalDataBase = "*" + database;
         if (!database.endsWith("*")) normalDataBase += "*";
@@ -64,12 +63,11 @@ public class TableController {
                 json.put("database", doc.getFirstValue("database"));
                 json.put("table", doc.getFirstValue("table"));
                 JSONObject jsonPartition = new JSONObject();
-                jsonPartition.put("hasPartition", doc.getFirstValue("table").hashCode() % 2 == 0 ? true : false);
-                if ( doc.getFirstValue("table").hashCode() % 2 == 0 ) {
-                    jsonPartition.put("partition", "dt=20160912,dt=20160911,dt=20160910,dt=20160909,dt=20160908,dt=20160907");
-                    jsonPartition.put("hasPartition", true);
-                } else {
-                    jsonPartition.put("hasPartition", false);
+                Object hasPartition = doc.getFirstValue("hasPartition");
+                boolean partition = hasPartition == null ? false : Boolean.valueOf(hasPartition.toString());
+                jsonPartition.put("hasPartition", partition);
+                if (partition) {
+                    jsonPartition.put("partition", doc.getFirstValue("partition"));
                 }
                 json.put("partition", jsonPartition);
                 jsonArray.put(json);
@@ -138,10 +136,10 @@ public class TableController {
             Thread t = new Thread(runnable);
             t.start();
             refesh = true;
-            json.put("result", "success");
+            json.put("result", "start");
         } else {
             // 如果已经正在更新，则返回
-            json.put("result", "正在更新");
+            json.put("result", "refreshing");
         }
         return json.toString();
     }
