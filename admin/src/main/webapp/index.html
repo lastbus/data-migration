@@ -1,98 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-ng-app="app">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- bootstrap -->
-	<link rel="stylesheet" type="text/css" href="/lib/js/bootstrap/css/bootstrap.css">
-	<link rel="stylesheet" type="text/css" href="/lib/js/bootstrap/css/bootstrap-theme.css">
-	<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
-	<script type="text/javascript" src="/lib/js/bootstrap/js/bootstrap.js"></script>
-	<!-- angular js -->
-	<script type="text/javascript" src="/lib/js/angular/angular.js"></script>
-	<script src="http://cdn.bootcss.com/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
-	<script src="/lib/js/angular/i18n/angular-locale_zh-cn.js"></script>
-	<style>
-		.page-list .pagination {float:left;}
-		.page-list .pagination span {cursor: pointer;}
-		.page-list .pagination .separate span{cursor: default; border-top:none;border-bottom:none;}
-		.page-list .pagination .separate span:hover {background: none;}
-		.page-list .page-total {float:left; margin: 25px 20px;}
-		.page-list .page-total input, .page-list .page-total select{height: 26px; border: 1px solid #ddd;}
-		.page-list .page-total input {width: 40px; padding-left:3px;}
-		.page-list .page-total select {width: 50px;}
-	</style>
-
-	<title>Data Migration</title>
+  <meta charset="utf-8" />
+  <title>Be Angular | Bootstrap Admin Web App with AngularJS</title>
+  <meta name="description" content="app, web app, responsive, responsive layout, admin, admin panel, admin dashboard, flat, flat ui, ui kit, AngularJS, ui route, charts, widgets, components" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+  <link rel="stylesheet" href="css/animate.css" type="text/css" />
+  <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css" />
+  <link rel="stylesheet" href="css/simple-line-icons.css" type="text/css" />
+  <link rel="stylesheet" href="css/font.css" type="text/css" />
+  <link rel="stylesheet" href="css/app.css" type="text/css" />
 </head>
-<body ng-app="main" ng-controller='dropdownCtl'>
+<body ng-controller="AppCtrl">
 
-<div class="container">
-	<h2>Data Migration</h2>
-	<button id="btnRefresh"  class="btn btn-primary" ng-click="refreshDataSource()">更新源数据</button>
-	<div>
-		<h4>Please choose destination: </h4>
-		<select ng-model="environment" ng-model="environment">
-			<option ng-repeat="env in envs">{{env}}</option>
-		</select>
-	</div>
-	<br/>
-	<div>
-		<input  type="text"  id="table" placeholder="table name" ng-model="tableName">
-	</div>
-	<br/>
-	<div>
-		<button class="btn btn-primary" ng-click="search()" >search</button>
-		<button class="btn btn-primary" disabled="true" id="importBtn">import all</button>
-	</div>
-	<br/>
-	<div>
-		<table class="table table-bordered" id="resultTable" ng-show="success">
-			<thead>
-			<tr>
-				<th class="col-lg-1" style="text-align: center">ID</th>
-				<th class="col-lg-1" style="text-align: center">environment</th>
-				<th class="col-lg-1" style="text-align: center">database</th>
-				<th class="col-lg-3" style="text-align: center">table Name</th>
-				<th class="col-lg-1" style="text-align: center">choose</th>
-				<th class="col-lg-6" style="text-align: center">partition/records</th>
-				<th class="col-lg-1" style="text-align: center">output</th>
-				<th>action</th>
-			</tr>
-			</thead>
-			<tbody>
-
-			<tr ng-repeat="table in tables">
-				<td>{{table.id}}</td>
-				<td>{{table.env}}</td>
-				<td>{{table.database}}</td>
-				<td>{{table.table}}</td>
-				<td>
-					<button ng-click="open($index)">{{table.partition | partition}}</button>
-				</td>
-				<td></td>
-				<td>
-					<input type="checkbox" ng-click="choose($index)" id="{{$index}}">
-				</td>
-				<td>
-					<button class="btn btn-primary" disabled="true" id="btn{{$index}}" ng-click="import($index)">import</button>
-				</td>
-			</tr>
-
-			</tbody>
-
-		</table>
-	</div>
-	<tm-pagination conf="paginationConf"></tm-pagination>
-	<!--<a href="modal.html">modal</a>-->
-</div>
-
-<script src="/js/tm.pagination.js"></script>
-<script src="/js/app.js"></script>
-<script src="/js/controllers/dropdownCtl.js"></script>
-<script src="/js/filter/partition.js"></script>
-<script src="js/controllers/partitionSelectCtl.js"></script>
+  <div class="app" id="app" ng-class="{'app-header-fixed':app.settings.headerFixed, 'app-aside-fixed':app.settings.asideFixed, 'app-aside-folded':app.settings.asideFolded, 'app-aside-dock':app.settings.asideDock, 'container':app.settings.container}" ui-view></div>
 
 
+  <!-- jQuery -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+
+  <!-- Angular -->
+  <script src="vendor/angular/angular.js"></script>
+  
+  <script src="vendor/angular/angular-animate/angular-animate.js"></script>
+  <script src="vendor/angular/angular-cookies/angular-cookies.js"></script>
+  <script src="vendor/angular/angular-resource/angular-resource.js"></script>
+  <script src="vendor/angular/angular-sanitize/angular-sanitize.js"></script>
+  <script src="vendor/angular/angular-touch/angular-touch.js"></script>
+<!-- Vendor -->
+  <script src="vendor/angular/angular-ui-router/angular-ui-router.js"></script> 
+  <script src="vendor/angular/ngstorage/ngStorage.js"></script>
+
+  <!-- bootstrap -->
+  <script src="vendor/angular/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+  <!-- lazyload -->
+  <script src="vendor/angular/oclazyload/ocLazyLoad.js"></script>
+  <!-- translate -->
+  <script src="vendor/angular/angular-translate/angular-translate.js"></script>
+  <script src="vendor/angular/angular-translate/loader-static-files.js"></script>
+  <script src="vendor/angular/angular-translate/storage-cookie.js"></script>
+  <script src="vendor/angular/angular-translate/storage-local.js"></script>
+
+  <!-- App -->
+  <script src="js/app.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/config.lazyload.js"></script>
+  <script src="js/config.router.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/services/ui-load.js"></script>
+  <script src="js/filters/fromNow.js"></script>
+  <script src="js/directives/setnganimate.js"></script>
+  <script src="js/directives/ui-butterbar.js"></script>
+  <script src="js/directives/ui-focus.js"></script>
+  <script src="js/directives/ui-fullscreen.js"></script>
+  <script src="js/directives/ui-jq.js"></script>
+  <script src="js/directives/ui-module.js"></script>
+  <script src="js/directives/ui-nav.js"></script>
+  <script src="js/directives/ui-scroll.js"></script>
+  <script src="js/directives/ui-shift.js"></script>
+  <script src="js/directives/ui-toggleclass.js"></script>
+  <script src="js/directives/ui-validate.js"></script>
+  <script src="js/controllers/bootstrap.js"></script>
+
+
+<!-- myself -->
+  <script src="/js/tm.pagination.js"></script>
+  <script src="/js/controllers/dropdownCtl.js"></script>
+  <script src="/js/filters/partition.js"></script>
+  <script src="js/controllers/partitionSelectCtl.js"></script>
+
+  <!-- Lazy loading -->
 </body>
 </html>

@@ -1,5 +1,19 @@
-/**
- * Created by MK33 on 2016/9/19.
- */
+'use strict';
 
-var app = angular.module('main', ['ui.bootstrap', 'tm.pagination']);
+
+angular.module('app', [
+    'ngAnimate',
+    'ngCookies',
+    'ngResource',
+    'ngSanitize',
+    'ngTouch',
+    'ngStorage',
+    'ui.router',
+    'ui.bootstrap',
+    'ui.load',
+    'ui.jq',
+    'ui.validate',
+    'oc.lazyLoad',
+    'pascalprecht.translate',
+    'tm.pagination'
+]);

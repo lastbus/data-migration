@@ -19,6 +19,15 @@
     </bean>
     <mvc:resources mapping="/lib/**" location="/WEB-INF/lib/" />
     <mvc:resources mapping="/js/**" location="/WEB-INF/js/" />
-    <mvc:resources mapping="/templates/**" location="WEB-INF/templates/" />
+    <mvc:resources mapping="/js.bk/**" location="/WEB-INF/js.bk/" />
+    <mvc:resources mapping="/templates/**" location="/WEB-INF/templates/" />
+    <mvc:resources mapping="/api/**" location="/WEB-INF/api/" />
+    <mvc:resources mapping="/bak/**" location="/WEB-INF/bak/" />
+    <mvc:resources mapping="/css/**" location="/WEB-INF/css/" />
+    <mvc:resources mapping="/fonts/**" location="/WEB-INF/fonts/" />
+    <mvc:resources mapping="/img/**" location="/WEB-INF/img/" />
+    <mvc:resources mapping="/l10n/**" location="/WEB-INF/l10n/" />
+    <mvc:resources mapping="/tpl/**" location="/WEB-INF/tpl/" />
+    <mvc:resources mapping="/vendor/**" location="/WEB-INF/vendor/" />
 
 </beans>

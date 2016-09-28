@@ -1,0 +1,60 @@
+
+<div class="wrapper-md">
+    <h2>Hive Table Migration</h2>
+    <button id="btnRefresh"  class="btn btn-primary" ng-click="refreshDataSource()">更新源数据</button>
+    <div>
+        <h4>Please choose destination: </h4>
+        <select ng-model="environment" ng-model="environment">
+            <option ng-repeat="env in envs">{{env}}</option>
+        </select>
+    </div>
+    <br/>
+    <div>
+        <input  type="text"  id="table" placeholder="table name" ng-model="tableName">
+    </div>
+    <br/>
+    <div>
+        <button class="btn btn-primary" ng-click="search()" >search</button>
+        <button class="btn btn-primary" disabled="true" id="importBtn">import all</button>
+    </div>
+    <br/>
+    <div>
+        <table class="table table-bordered" id="resultTable" ng-show="success">
+            <thead>
+            <tr>
+                <th class="col-lg-1" style="text-align: center">ID</th>
+                <th class="col-lg-1" style="text-align: center">environment</th>
+                <th class="col-lg-1" style="text-align: center">database</th>
+                <th class="col-lg-3" style="text-align: center">table Name</th>
+                <th class="col-lg-1" style="text-align: center">choose</th>
+                <th class="col-lg-6" style="text-align: center">partition/records</th>
+                <th class="col-lg-1" style="text-align: center">output</th>
+                <th>action</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr ng-repeat="table in tables">
+                <td>{{table.id}}</td>
+                <td>{{table.env}}</td>
+                <td>{{table.database}}</td>
+                <td>{{table.table}}</td>
+                <td>
+                    <button ng-click="open($index)">{{table.partition | partition}}</button>
+                </td>
+                <td></td>
+                <td>
+                    <input type="checkbox" ng-click="choose($index)" id="{{$index}}">
+                </td>
+                <td>
+                    <button class="btn btn-primary" disabled="true" id="btn{{$index}}" ng-click="import($index)">import</button>
+                </td>
+            </tr>
+
+            </tbody>
+
+        </table>
+    </div>
+    <tm-pagination conf="paginationConf"></tm-pagination>
+</div>
+
