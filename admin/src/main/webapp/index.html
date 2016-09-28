@@ -48,16 +48,19 @@
 	<br/>
 	<div>
 		<table class="table table-bordered" id="resultTable" ng-show="success">
+			<thead>
 			<tr>
-				<td class="col-lg-1" style="text-align: center">ID</td>
-				<td class="col-lg-1" style="text-align: center">environment</td>
-				<td class="col-lg-1" style="text-align: center">database</td>
+				<th class="col-lg-1" style="text-align: center">ID</th>
+				<th class="col-lg-1" style="text-align: center">environment</th>
+				<th class="col-lg-1" style="text-align: center">database</th>
 				<th class="col-lg-3" style="text-align: center">table Name</th>
 				<th class="col-lg-1" style="text-align: center">choose</th>
 				<th class="col-lg-6" style="text-align: center">partition/records</th>
 				<th class="col-lg-1" style="text-align: center">output</th>
 				<th>action</th>
 			</tr>
+			</thead>
+			<tbody>
 
 			<tr ng-repeat="table in tables">
 				<td>{{table.id}}</td>
@@ -72,9 +75,11 @@
 					<input type="checkbox" ng-click="choose($index)" id="{{$index}}">
 				</td>
 				<td>
-					<button class="btn btn-primary" disabled="true" id="btn{{$index}}">import</button>
+					<button class="btn btn-primary" disabled="true" id="btn{{$index}}" ng-click="import($index)">import</button>
 				</td>
 			</tr>
+
+			</tbody>
 
 		</table>
 	</div>

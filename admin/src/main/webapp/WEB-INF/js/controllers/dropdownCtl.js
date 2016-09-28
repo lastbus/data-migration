@@ -163,5 +163,33 @@ app.controller('dropdownCtl', function($scope, $http, $modal, $log, $filter) {
             })
         }
     };
+    
+    $scope.import = function(index) {
+        var selectedTable = $scope.tables[index];
+        console.log(selectedTable);
+        var env = selectedTable.env;
+        var database = selectedTable.database;
+        var table = selectedTable.table;
+        if (selectedTable.partition.hasPartition) {
+            var t = document.getElementById("resultTable").getElementsByTagName("tr")[index + 1];
+            var partition = t.getElementsByTagName("td")[5].innerHTML;
+            var url = "http://localhost:8080/move/env/" + env + "/database/" + database + "/table/" + table + "/partition/" + partition;
+            console.log(url);
+            $http.get(url).then(function successCallback(response) {
+
+            }, function errorCallback(response) {
+
+            });
+        } else {
+            var url = "http://localhost:8080/move/env/" + env + "/database/" + database + "/table/" + table;
+            console.log(url);
+            $http.get(url).then(function successCallback(response) {
+
+            }, function errorCallback(response) {
+
+            });
+
+        }
+    };
 });
 

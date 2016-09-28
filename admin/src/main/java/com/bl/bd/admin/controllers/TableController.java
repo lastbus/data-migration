@@ -1,5 +1,6 @@
 package com.bl.bd.admin.controllers;
 
+import com.bl.bd.admin.dao.HiveConnection;
 import com.bl.bd.admin.dao.HiveService;
 import com.bl.bd.admin.dao.SolrConnection;
 import org.apache.solr.client.solrj.SolrClient;
@@ -14,6 +15,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -22,6 +28,9 @@ import java.util.Iterator;
  */
 @Controller
 public class TableController {
+
+    // hdfs temp dir
+    String tmpBaseDir = "hdfs://10.201.129.78:8020/tmp/hiveMigration";
 
     /**
      * weather solr is refreshing data
@@ -143,5 +152,123 @@ public class TableController {
         }
         return json.toString();
     }
+
+
+    @RequestMapping(value = "/move/env/{env}/database/{database}/table/{table}/partition/{partition}")
+    public String hiveDataMigration(@PathVariable String env, @PathVariable String database, @PathVariable String table, @PathVariable String partition) {
+        System.out.println(String.format("/move/env/%s/database/%s/table/%s/partition/%s", env, database, table, partition));
+        JSONObject json = new JSONObject();
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            conn = HiveConnection.getInstance().getConnect(env);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+            String tmpDir = tmpBaseDir + "/" + sdf.format(new Date()) + "-" + database + "." + table;
+            System.out.println(tmpDir);
+            String sql = String.format(" export table %s.%s partition (%s) to '%s' ", database, table, partition, tmpDir);
+            System.out.println(sql);
+            stmt = conn.createStatement();
+            boolean r1 = stmt.execute(sql);
+            if (r1) {
+                System.out.println(r1);
+            } else {
+                System.out.println(r1);
+            }
+
+            stmt.execute("use " + " kefu");  // just for test
+            String sql2 = String.format("import from  '%s'", tmpDir);
+            System.out.println(sql2);
+            boolean r2 = stmt.execute(sql2);
+            if (r2) {
+                System.out.println(r2);
+            } else {
+                System.out.println(r2);
+            }
+            System.out.println("export success");
+
+        } catch (SQLException e) {
+            json.put("result", "error");
+            json.put("msg", e.getMessage());
+            e.printStackTrace();
+            return json.toString();
+        } catch (ClassNotFoundException e) {
+            json.put("result", "error");
+            json.put("msg", e.getMessage());
+            e.printStackTrace();
+            return json.toString();
+        }
+        json.put("result", "success");
+        return json.toString();
+    }
+
+    @RequestMapping(value = "/move/env/{env}/database/{database}/table/{table}/")
+    public String hiveDataMigration(@PathVariable String env, @PathVariable String database, @PathVariable String table) {
+        System.out.println(String.format("/move/env/%s/database/%s/table/%s/", env, database, table));
+        JSONObject json = new JSONObject();
+        Connection conn = null;
+        try {
+            conn = HiveConnection.getInstance().getConnect(env);
+        } catch (SQLException e) {
+            json.put("result", "error");
+            json.put("msg", e.getMessage());
+            e.printStackTrace();
+            return json.toString();
+        } catch (ClassNotFoundException e) {
+            json.put("result", "error");
+            json.put("msg", e.getMessage());
+            e.printStackTrace();
+            return json.toString();
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String tmpDir = tmpBaseDir + "/" + sdf.format(new Date()) + "-" + database + "." + table;
+        System.out.println(tmpDir);
+        String sql = String.format(" export table %s.%s to '%s' ", database, table, tmpDir);
+        System.out.println(sql);
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            boolean result = stmt.execute(sql);
+            if (result) {
+                System.out.println(result);
+            } else {
+                int count = stmt.getUpdateCount();
+                System.out.println("modify " + count + "  records");
+            }
+            System.out.println("hive table " +  database + "." + table + " move to " + tmpDir);
+            String sql2 = String.format("import from '%s'", tmpDir);
+            System.out.println(sql2);
+            stmt.execute("use kefu"); // just for test
+            boolean result2 = stmt.execute(sql2);
+            if (result2) {
+                System.out.println(result2);
+            } else {
+                System.out.println(result2);
+            }
+            System.out.println("import table success!");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            json.put("result", "error");
+            json.put("msg", e.getMessage());
+            return json.toString();
+        }
+
+        json.put("result", "success");
+
+        return json.toString();
+    }
+
+
+    public static void main(String[] args) {
+
+        TableController t = new TableController();
+//        String r = t.hiveDataMigration("test", "default", "kylin_cal_dt");
+
+        String r = t.hiveDataMigration("test", "recommendation", "user_behavior_raw_data", "dt=20160104,dt=20160105,dt=20160106,dt=20160107,dt=20160108,dt=20160109");
+        System.out.println(r);
+
+    }
+
 
 }

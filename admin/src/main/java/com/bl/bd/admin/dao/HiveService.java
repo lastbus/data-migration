@@ -102,6 +102,21 @@ public class HiveService {
         }
     }
 
+    public static void dataMigration() {
+        try {
+            Connection conn = HiveConnection.getInstance().getConnection();
+            Statement stmt = conn.createStatement();
+            boolean recommend = stmt.execute("use recommendation");
+            System.out.println(recommend);
+            boolean move = stmt.execute("import from \'/tmp/recommendation.recommend_conversion_tmp\'");
+            System.out.println(move);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * load properties files
      */
@@ -165,23 +180,25 @@ public class HiveService {
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
 
-        String url = "jdbc:hive2://m78sit:10000/default;user=hive;password=123456";
-        Class.forName("org.apache.hive.jdbc.HiveDriver");
-        Connection conn = DriverManager.getConnection(url);
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("show create TABLE recommendation.user_behavior_raw_data");
-        int i = 0;
-        StringBuilder sb = new StringBuilder();
-        boolean partition = hasPartition(rs);
-        if (partition) {
-            ResultSet partitionRS = stmt.executeQuery("show partitions recommendation.user_behavior_raw_data");
-            while (partitionRS.next())
-                sb.append(partitionRS.getString(1).trim()).append(",");
-//                System.out.println(partitionRS.getString(1));
-        } else {
-            System.out.println("no partition");
-        }
-        System.out.println(sb.subSequence(0, sb.length() - 2).toString());
+        dataMigration();
+
+//        String url = "jdbc:hive2://m78sit:10000/default;user=hive;password=123456";
+//        Class.forName("org.apache.hive.jdbc.HiveDriver");
+//        Connection conn = DriverManager.getConnection(url);
+//        Statement stmt = conn.createStatement();
+//        ResultSet rs = stmt.executeQuery("show create TABLE recommendation.user_behavior_raw_data");
+//        int i = 0;
+//        StringBuilder sb = new StringBuilder();
+//        boolean partition = hasPartition(rs);
+//        if (partition) {
+//            ResultSet partitionRS = stmt.executeQuery("show partitions recommendation.user_behavior_raw_data");
+//            while (partitionRS.next())
+//                sb.append(partitionRS.getString(1).trim()).append(",");
+////                System.out.println(partitionRS.getString(1));
+//        } else {
+//            System.out.println("no partition");
+//        }
+//        System.out.println(sb.subSequence(0, sb.length() - 2).toString());
     }
 
     public static boolean hasPartition(ResultSet rs) throws SQLException {
