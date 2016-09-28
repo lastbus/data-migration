@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+<!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap-theme.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/js/bootstrap/js/bootstrap.js"></script>
+    <!-- angular js -->
+    <script type="text/javascript" src="lib/js/angular/angular.js"></script>
+    <script type="text/javascript" src="lib/js/angular/angular-route.js"></script>
+	<title></title>
+</head>
+<body ng-app='myApp'>
+
+<header>
+<h1>Header</h1>
+</header>
+<div class="content">
+<div ng-view></div>
+</div>
+<footer>
+<h5>Footer</h5>
+</footer>
+
+
+<script>
+	var app = angular.module('myApp', ['ngRoute']);
+
+	app.config(['$routeProvider', function($routeProvider) {
+		$routeProvider
+			.when('/', {
+			templateUrl: 'home',
+			controller: 'HomeController'
+			})
+			.when('/login', {
+			templateUrl: 'login',
+			controller: 'LoginController'
+			})
+			.when('/dashboard', {
+			templateUrl: 'dashboard',
+			controller: 'DashboardController',
+			resolve: {
+			user: function(SessionService) {
+			return SessionService.getCurrentUser();
+					}
+				}
+			})
+			.otherwise({
+			redirectTo: '/'
+			});
+	}]);
+
+</script>
+</body>
+</html>
