@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap-theme.css">
+    <link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="lib/angular-ui-tree.css">
+    <script src="lib/js/bootstrap/js/jquery-3.1.0.js"></script>
+    <script src="lib/js/bootstrap/js/bootstrap.js"></script>
+
+    <script type="text/javascript" src="lib/js/angular/angular.js"></script>
+    <script type="text/javascript" src="lib/js/angular/angular-route.js"></script>
+
+    <script src="lib/angular-ui-tree.js"></script>
+
+	<title></title>
+</head>
+<body ng-app="MyApp" ng-controller="test">
+
+
+<div ui-tree>
+  <ol ui-tree-nodes="" ng-model="list">
+    <li ng-repeat="item in list" ui-tree-node>
+      <div ui-tree-handle>
+        {{item.title}}
+      </div>
+      <ol ui-tree-nodes="" ng-model="item.items">
+        <li ng-repeat="subItem in item.items" ui-tree-node>
+          <div ui-tree-handle>
+            {{subItem.title}}
+          </div>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</div>
+
+<script>
+	
+	var myAppModule = angular.module('MyApp', ['ui.tree']);
+
+	myAppModule.controller('test', function($scope) {
+
+		$scope.list = [{title: "one", items: [{title: "1"}, {title: "2"}]}]
+	})
+</script>
+
+
+
+
+</body>
+</html>
