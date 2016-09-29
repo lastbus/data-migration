@@ -1,4 +1,6 @@
 import java.io.*;
+import java.sql.Connection;
+import java.sql.Statement;
 
 /**
  * Created by MK33 on 2016/9/20.
@@ -6,6 +8,7 @@ import java.io.*;
 public class LocalFileReader {
 
     public static void main(String[] args) throws IOException {
+
 //        if (args.length < 1) {
 //            System.out.println("Please input file name");
 //            System.exit(-1);

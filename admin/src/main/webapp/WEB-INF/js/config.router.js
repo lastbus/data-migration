@@ -407,7 +407,24 @@ angular.module('app')
                   //         templateUrl: 'tpl/hive_migration.html'
                   //     }
                   // }
-              });
+              })
+                
+              .state('custom.hive2', {
+                  url: 'hive2',
+                  templateUrl: 'tpl/hive_migration2.html',
+                  controller: 'hive_migrationCtl2',
+                  resolve: {
+                      deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                          //             return $ocLazyLoad.load('angularBootstrapNavTree').then(
+                          //                 function(){
+                          //                    return $ocLazyLoad.load('js/controllers/tree.js');
+                          return $ocLazyLoad.load('angularBootstrapNavTree').then(function () {
+                            return $ocLazyLoad.load(['js/controllers/hive_migration2.js']);
+                          });
+                      }]
+                  }
+              })
+          ;
 
       //         .state('layout', {
           //             abstract: true,

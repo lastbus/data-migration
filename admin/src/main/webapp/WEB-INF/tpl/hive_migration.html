@@ -1,10 +1,10 @@
 
-<div class="wrapper-md">
+<div class="col-lg-12">
     <h2>Hive Table Migration</h2>
     <button id="btnRefresh"  class="btn btn-primary" ng-click="refreshDataSource()">更新源数据</button>
     <div>
         <h4>Please choose destination: </h4>
-        <select ng-model="environment" ng-model="environment">
+        <select ng-model="environment">
             <option ng-repeat="env in envs">{{env}}</option>
         </select>
     </div>
