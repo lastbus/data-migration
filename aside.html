@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="lib/js/bootstrap/css/bootstrap-theme.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/js/bootstrap/js/bootstrap.js"></script>
+    <!-- angular js -->
+    <script type="text/javascript" src="lib/js/angular/angular.js"></script>
+    <script type="text/javascript" src="lib/js/angular/angular-route.js"></script>
+    <script type="text/javascript" src="lib/js/angular/angular-ui-router.js"></script>
+    <script type="text/javascript" src="lib/js/angular/angular-animate.js"></script>
+	<title>Aside study</title>
+</head>
+<body ng-app='asideApp'>
+
+<div class="aside-wrap">
+
+  <div class="navi-wrap">
+    <nav ui-nav class="navi">
+    	<ul class="nav">
+
+		  <li>
+		    <a href class="auto">
+		      <span class="pull-right text-muted">
+		        <i class="fa fa-fw fa-angle-right text"></i>
+		        <i class="fa fa-fw fa-angle-down text-active"></i>
+		      </span>
+		      <i class="glyphicon glyphicon-th-list"></i>
+		      <span>Data Migration</span>
+		    </a>
+		    <ul class="nav nav-sub dk">
+		      <li class="nav-sub-header">
+		        <a href>
+		          <span>Data Migration</span>
+		        </a>
+		      </li>
+		      <li ui-sref-active="active">
+		        <a ui-sref="hive">
+		          <span>Hive</span>
+		        </a>
+		      </li>
+		      <li ur-sref-active="active">
+		        <a ui-sref="hive2">
+		          <span>hive2</span>
+		        </a>
+		      </li>
+		    </ul>
+		  </li>
+
+		<a ui-sref="home">Home</a>
+		<a ui-sref="about">About</a>
+		<a ui-sref="contacts.list">Contacts</a>
+
+    	</ul>
+    </nav>
+  </div>
+</div>
+
+
+
+
+<div ui-view></div>
+
+
+<script>
+	var app = angular.module('asideApp', ['ngRoute', 'ui.router']);
+
+	app.config(['$stateProvider', '$urlRouterProvider',function ($stateProvider,   $urlRouterProvider) {
+
+		// $urlRouterProvider
+  //             .otherwise('/');
+
+        $stateProvider
+        .state('hive', {
+        	url: '/hive',
+        	template: '1111'
+        	
+        })
+        .state('hive2', {
+        	url: '/hive2',
+        	template: '222'
+        })
+        .state('about', {
+        	url: '/about',
+        	template: "about"
+        })
+
+
+	}]);
+
+
+</script>
+</body>
+</html>

@@ -32,21 +32,21 @@
 	app.config(['$routeProvider', function($routeProvider) {
 		$routeProvider
 			.when('/', {
-			templateUrl: 'home',
-			controller: 'HomeController'
+				templateUrl: 'home',
+				controller: 'HomeController'
 			})
 			.when('/login', {
-			templateUrl: 'login',
-			controller: 'LoginController'
+				templateUrl: 'login',
+				controller: 'LoginController'
 			})
 			.when('/dashboard', {
-			templateUrl: 'dashboard',
-			controller: 'DashboardController',
-			resolve: {
-			user: function(SessionService) {
-			return SessionService.getCurrentUser();
+				templateUrl: 'dashboard',
+				controller: 'DashboardController',
+				resolve: {
+				user: function(SessionService) {
+				return SessionService.getCurrentUser();
+						}
 					}
-				}
 			})
 			.otherwise({
 			redirectTo: '/'
